@@ -9,6 +9,7 @@ Project for Web Services and Applications
 
 # How to install and run
 prerequisites - flask
+.\venv\Scripts\activate.bat to run a virtual environment
 
 # How to use
 
