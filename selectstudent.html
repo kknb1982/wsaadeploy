@@ -1,0 +1,57 @@
+<html>
+    <head>
+        <title>Student Page</title>
+    </head>
+
+    <body>
+        <h1>Student details</h1>
+        <br/>
+        <div id="student-details-form">
+            First name: <input type="text" id="firstName"><br/>
+            Last name: <input type="text" id="lastName"><br/>
+            Student ID: <input type="text" id="studentID"><br/>
+            Email: <input type="text" id="email"><br/>
+            Subject: <input type="text" id="subject"><br/>
+            <button id="submit" onclick="doForm()">Submit</button><br/>
+            <br/>
+        </div>
+        
+        
+        
+        <div id="student-details">
+            output here
+        </div>
+        <script>
+            
+
+            function doForm() {
+                var newstudent = {}
+                var form = document.getElementById("student-details-form")
+                newstudent.firstName = form.querySelector('input[id="firstName"').value
+                newstudent.lastName = form.querySelector('input[id="lastName"').value
+                newstudent.studentID = form.querySelector('input[id="studentID"').value
+                newstudent.email = form.querySelector('input[id="email"').value
+                newstudent.subject = form.querySelector('input[id="subject"').value
+
+                console.log("form data " + JSON.stringify(newstudent))
+
+                var names=["Joe", "Mary", "John", "Kirstin"]
+                var output = ' '
+                for (name of names) {
+                    output += name + "<br/>"
+                }
+            document.getElementById("student-details").innerHTML = output
+                var student = {
+                    firstName: firstName,
+                    lastName: lastName,
+                    studentID: studentID,
+                    email: email,
+                    subject: subject
+                };
+
+                console.log("Student is " + JSON.stringify(student));
+            }
+        </script>
+    </body>
+</html>
+
