@@ -1,15 +1,46 @@
-name: Run-Daily
+name: Update_country
 
 on:
   schedule:
     - cron: '0 3 * * 0'
 
+ workflow_dispatch:
+
+permissions:
+  contents: write
+
 jobs:
-  run-script:
+  download_and_commit:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2 
-    - name: Run Script
+    # Step 1: Checkout the repository
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        persist-credentials: true
+
+    # Step 2: Set up the environment for running weather.sh
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    # Step 3: Install dependencies
+    - name: Install dependencies
+      run: 
+        pip install -r requirements.txt
+
+    # Step 4: Run the countries.sh script to download the data
+    - name: Download Country Data
+      run: 
+        ./country.sh
+
+    # Step 5: Add, commit, and push the new data file
+    - name: Commit and Push Data
       run: |
-        chmod +x script.sh
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git add .
+        git commit -m "Add new country data - $(date '+%Y-%m-%d')"
+        git push origin main
