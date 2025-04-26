@@ -1,0 +1,79 @@
+<html>
+    <head>
+        <title>Travel_form</title>
+    </head>
+
+    <body>
+        <h1>Travel form</h1>
+        <p>Please enter the detail of your travel on this page. In the table please add one line for each travel location.</p>
+        
+        <form id="travelForm" method="POST">
+            <label>City:</label>
+            <input type="text" name="city" required><br>
+          
+            <label>Country:</label>
+            <input type="text" name="country" required><br>
+          
+            <label>Start Date:</label>
+            <input type="date" name="start_date" required><br>
+          
+            <label>End Date:</label>
+            <input type="date" name="end_date" required><br>
+          
+            <button type="submit">Add Travel</button>
+            <h2>Travel List</h2>
+            <table id="travelTable" border="1">
+                <thead>
+                    <tr>
+                        <th>City</th>
+                        <th>Country</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows will be added here dynamically -->
+                </tbody>
+            </table>
+                
+            <script>
+                document.getElementById('travelForm').addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    // Get form data
+                    const formData = new FormData(this);
+                    const city = formData.get('city');
+                    const country = formData.get('country');
+                    const startDate = formData.get('start_date');
+                    const endDate = formData.get('end_date');
+                    
+                    // Add a new row to the table
+                    const table = document.getElementById('travelTable').querySelector('tbody');
+                    const newRow = document.createElement('tr');
+                    newRow.innerHTML = `
+                        <td>${city}</td>
+                        <td>${country}</td>
+                        <td>${startDate}</td>
+                        <td>${endDate}</td>
+                    `;
+                    table.appendChild(newRow);
+    
+                    // Optionally send the data to the server
+                    const response = await fetch('/api/add-travel', {
+                        method: 'POST',
+                        body: formData
+                    });
+    
+                    const result = await response.json();
+                    if (result.success) {
+                        alert('Travel added!');
+                    } else {
+                        alert('Error adding travel');
+                    }
+    
+                    // Reset the form
+                    this.reset();
+                });
+            </script>
+        </body>
+    </html>

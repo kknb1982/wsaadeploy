@@ -1,0 +1,1 @@
+travel_plans = db.relationship('TravelPlan', back_populates='user', cascade='all, delete-orphan')

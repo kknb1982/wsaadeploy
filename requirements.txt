@@ -1,1 +1,10 @@
 flask
+
+requests
+
+pandas
+
+geopy
+
+
+pip install flask-login flask-bcrypt flask-sqlalchemy

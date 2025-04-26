@@ -1,0 +1,38 @@
+
+<html>
+<head>
+    <title>Disaster Risk Report</title>
+    </head>
+<body>
+    <h1>Report for disasters near your travel locations</h1>
+    <div id="disasterReport"></div>
+    <script>
+        async function loadDisasters() {
+        const response = await fetch('/api/check-disasters');
+        const disasters = await response.json();
+        
+        const reportDiv = document.getElementById('disasterReport');
+        reportDiv.innerHTML = '';
+        
+        if (disasters.length === 0) {
+            reportDiv.innerHTML = '<p>No disasters found near your travel locations!</p>';
+            return;
+        }
+        
+        disasters.forEach(item => {
+            const card = `
+            <div style="border:1px solid #ccc; padding:10px; margin:10px;">
+                <strong>Travel Location:</strong> ${item.travel_city}, ${item.travel_country} <br>
+                <strong>Nearby Disaster:</strong> <a href="${item.disaster_url}" target="_blank">${item.disaster_name}</a> <br>
+                <strong>Distance:</strong> ${item.distance_km} km
+            </div>
+            `;
+            reportDiv.innerHTML += card;
+        });
+        }
+        
+        loadDisasters();
+        </script>
+        
+        </body>
+        </html>
