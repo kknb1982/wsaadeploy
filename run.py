@@ -11,3 +11,6 @@ pip install -r requirements.txt
 
 #Deactivate the virtual environment
 deactivate
+
+
+if __name__ == "__main__":

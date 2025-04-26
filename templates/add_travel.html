@@ -29,6 +29,7 @@
                         <th>Country</th>
                         <th>Start Date</th>
                         <th>End Date</th>
+                        <th>FCO Advice</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -37,6 +38,15 @@
             </table>
                 
             <script>
+                let countrySlugMap = {};
+
+                async function loadCountrySlugs() {
+                const response = await fetch('/staticpages/country_slugs.json'); // Save it into /static/
+                countrySlugMap = await response.json();
+                }
+
+document.addEventListener('DOMContentLoaded', async function() {
+    await loadCountrySlugs();
                 document.getElementById('travelForm').addEventListener('submit', async function(e) {
                     e.preventDefault();
                     
@@ -46,7 +56,14 @@
                     const country = formData.get('country');
                     const startDate = formData.get('start_date');
                     const endDate = formData.get('end_date');
-                    
+            
+                    const customSlug = countrySlugMap[country.trim()];
+                    const standardSlug = country.toLowerCase().replace(/\s+/g, '-');
+                    const finalSlug = customSlug || standardSlug;
+            
+                    // Build the FCO travel advice link
+                    const adviceLink = `https://www.gov.uk/foreign-travel-advice/${finalSlug}`;
+            
                     // Add a new row to the table
                     const table = document.getElementById('travelTable').querySelector('tbody');
                     const newRow = document.createElement('tr');
@@ -55,25 +72,32 @@
                         <td>${country}</td>
                         <td>${startDate}</td>
                         <td>${endDate}</td>
+                        <td>
+                            <a href="${adviceLink}" target="_blank">
+                                <button type="button">View FCO Advice</button>
+                            </a>
+                        </td>
                     `;
                     table.appendChild(newRow);
-    
+            
                     // Optionally send the data to the server
                     const response = await fetch('/api/add-travel', {
                         method: 'POST',
                         body: formData
                     });
-    
+            
                     const result = await response.json();
                     if (result.success) {
                         alert('Travel added!');
                     } else {
                         alert('Error adding travel');
                     }
-    
+            
                     // Reset the form
                     this.reset();
+                })
                 });
             </script>
+            
         </body>
     </html>
