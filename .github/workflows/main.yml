@@ -3,8 +3,7 @@ name: Update_country
 on:
   schedule:
     - cron: "*/5 * * * *"
-
- workflow_dispatch:
+  workflow_dispatch:
 
 permissions:
   contents: write
