@@ -17,9 +17,11 @@ def fetch_country_slugs():
         if country_name and slug:
             country_map[country_name] = slug
 
-# Save to JSON file in the staticpages directory
-    staticpages_dir = os.path.dirname(__file__)  # Get the directory of this script
-    file_path = os.path.join(staticpages_dir, 'country_slugs.json')
+# Save to JSON file in the data directory
+    base_dir = os.path.dirname(__file__)  # Get the directory of this script
+    data_dir = os.path.join(base_dir, 'data')  # Point to the data folder
+    os.makedirs(data_dir, exist_ok=True)  # Ensure the data folder exists
+    file_path = os.path.join(data_dir, 'country_slugs.json')
 
     with open(file_path, 'w') as f:
         json.dump(country_map, f, indent=2)
