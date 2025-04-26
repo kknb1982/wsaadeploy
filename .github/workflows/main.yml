@@ -20,7 +20,7 @@ jobs:
       with:
         persist-credentials: true
 
-    # Step 2: Set up the environment for running weather.sh
+    # Step 2: Set up the environment
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
@@ -28,13 +28,13 @@ jobs:
 
     # Step 3: Install dependencies
     - name: Install dependencies
-      run: 
+      run: |
         pip install -r requirements.txt
 
     # Step 4: Run the countries.sh script to download the data
     - name: Download Country Data
-      run: 
-        ./country.sh
+      run: |
+        python update_country_slugs.py
 
     # Step 5: Add, commit, and push the new data file
     - name: Commit and Push Data
