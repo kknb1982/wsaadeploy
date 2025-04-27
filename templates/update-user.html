@@ -13,13 +13,13 @@
         {% endif %}
 
         <div id="updateUserFormContainer">
-            <form id="updateUserForm" onsubmit="event.preventDefault(); submitUpdateUser();">
+            <form id="updateUserForm">
                 First name <input type="text" id="firstname" placeholder="First Name" value="{{ user['firstname'] }}" required><br>
                 Surname <input type="text" id="surname" placeholder="Surname" value="{{ user['surname'] }}" required><br>
                 Email address <input type="email" id="email" placeholder="Email" value="{{ user['email'] }}" required><br>
                 Phone <input type="text" id="phone" placeholder="Phone Number" value="{{ user['phone'] }}" required><br>
                 Role <input type="text" id="role" placeholder="Role (e.g., Staff, Student)" value="{{ user['role'] }}"><br>
-                <button type="submit">Submit</button>
+                <button type="button" onclick="submitUpdateUser()">Submit</button>
             </form>
         </div>
     </body>

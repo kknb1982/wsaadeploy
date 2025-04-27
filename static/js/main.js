@@ -79,35 +79,34 @@ function loadTravel() {
 }
 
 function submitUpdateUser() {
-    const userId = "{{ session['userid'] }}";
+    const userId = "{{ session['userid'] }}"; // Get the current user's ID
     const userData = {
-        userid: userId,,
+        userid: userId,
         firstname: document.getElementById('firstname').value,
         surname: document.getElementById('surname').value,
         email: document.getElementById('email').value,
         phone: document.getElementById('phone').value,
         role: document.getElementById('role').value
-};
+    };
 
-fetch('/api/user', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(userData)
-})
-.then(response => {
-    if (response.ok) {
-        alert('User record updated successfully!');
-        const formContainer = document.getElementById('updateUserFormContainer');
-        formContainer.innerHTML = `
-            <p style="color: green;">User record updated successfully!</p>
-            <button onclick="window.location.href='/dashboard'" class="btn btn-primary">Back to Dashboard</button>
-        `;
-    } else {
-        alert('Failed to update user record. Please try again.');
-    }
-})
-.catch(error => {
-    console.error('Error:', error);
-    alert('An error occurred while updating the user record.');
-});
+    fetch('/api/user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData)
+    })
+    .then(response => {
+        if (response.ok) {
+            const formContainer = document.getElementById('updateUserFormContainer');
+            formContainer.innerHTML = `
+                <p style="color: green;">User record updated successfully!</p>
+                <button onclick="window.location.href='/dashboard'" class="btn btn-primary">Back to Dashboard</button>
+            `;
+        } else {
+            alert('Failed to update user record. Please try again.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while updating the user record.');
+    });
 }
