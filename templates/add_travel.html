@@ -5,31 +5,38 @@
 
     <body>
         <h1>Travel form</h1>
-        <p>Please enter the detail of your travel on this page. In the table please add one line for each travel location.</p>
+        <p>Please enter the detail of your travel on this page.<br> 
+            Please add one line for each travel location.</p>
         
         <form id="travelForm" method="POST">
+            <label>Institution or host company:</label>
+            <input type="text" name="institution"><br>
+            
             <label>City:</label>
             <input type="text" name="city" required><br>
-          
+            
             <label>Country:</label>
             <input type="text" name="country" required><br>
-          
+            
             <label>Start Date:</label>
             <input type="date" name="start_date" required><br>
-          
+
             <label>End Date:</label>
             <input type="date" name="end_date" required><br>
         
-            <button type="submit">Add Travel</button>
-            <h2>Travel List</h2>
+            <button type="submit" onclick="addtravel()">Add Travel</button>
+
+        </form>
+
+        <h2>Travel List</h2>
             <table id="travelTable" border="1">
                 <thead>
                     <tr>
+                        <th>Institution</th>
                         <th>City</th>
                         <th>Country</th>
                         <th>Start Date</th>
                         <th>End Date</th>
-                        <th>FCO Advice</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -38,65 +45,30 @@
             </table>
                 
             <script>
-                let countrySlugMap = {};
+                function addtravel() {
+                    const form = document.getElementById('travelForm');
+                    const formData = new FormData(form);
+                    const travelData = {
+                        institution: formData.get('institution'),
+                        city: formData.get('city'),
+                        country: formData.get('country'),
+                        start_date: formData.get('start_date'),
+                        end_date: formData.get('end_date')
+                    };
 
-                async function loadCountrySlugs() {
-                const response = await fetch('/data/country_slugs.json'); 
-                countrySlugMap = await response.json();
+                    // Add the travel data to the table
+                    const tableBody = document.querySelector('#travelTable tbody');
+                    const newRow = tableBody.insertRow();
+                    Object.values(travelData).forEach(value => {
+                        const cell = newRow.insertCell();
+                        cell.textContent = value;
+                    });
+
+                    // Clear the form fields
+                    form.reset();
                 }
 
-document.addEventListener('DOMContentLoaded', async function() {
-    await loadCountrySlugs();
-                document.getElementById('travelForm').addEventListener('submit', async function(e) {
-                    e.preventDefault();
-                    
-                    // Get form data
-                    const formData = new FormData(this);
-                    const city = formData.get('city');
-                    const country = formData.get('country');
-                    const startDate = formData.get('start_date');
-                    const endDate = formData.get('end_date');
-            
-                    const customSlug = countrySlugMap[country.trim()];
-                    const standardSlug = country.toLowerCase().replace(/\s+/g, '-');
-                    const finalSlug = customSlug || standardSlug;
-            
-                    // Build the FCO travel advice link
-                    const adviceLink = `https://www.gov.uk/foreign-travel-advice/${finalSlug}`;
-            
-                    // Add a new row to the table
-                    const table = document.getElementById('travelTable').querySelector('tbody');
-                    const newRow = document.createElement('tr');
-                    newRow.innerHTML = `
-                        <td>${city}</td>
-                        <td>${country}</td>
-                        <td>${startDate}</td>
-                        <td>${endDate}</td>
-                        <td>
-                            <a href="${adviceLink}" target="_blank">
-                                <button type="button">View FCO Advice</button>
-                            </a>
-                        </td>
-                    `;
-                    table.appendChild(newRow);
-            
-                    // Optionally send the data to the server
-                    const response = await fetch('/api/add-travel', {
-                        method: 'POST',
-                        body: formData
-                    });
-            
-                    const result = await response.json();
-                    if (result.success) {
-                        alert('Travel added!');
-                    } else {
-                        alert('Error adding travel');
-                    }
-            
-                    // Reset the form
-                    this.reset();
-                })
-                });
+
             </script>
             
         </body>
