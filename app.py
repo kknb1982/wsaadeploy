@@ -35,7 +35,7 @@ def dashboard():
 def update_user():
     if 'userid' not in session:
         return redirect('/login')
-    return render_template('update_user.html', user=session)
+    return render_template('update-user.html', user=session)
 
 @app.route('/add-travel')
 def add_travel():
@@ -91,7 +91,6 @@ def post_travel():
     return jsonify({'status': 'success'})
 
 # API to update user information
-@app.route('/api/user', methods=['POST'])
 def api_update_user():
     if 'userid' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
@@ -104,9 +103,8 @@ def api_update_user():
         return jsonify({'error': 'Unauthorized'}), 403
 
     # Update the user record
-    update_user_record(user_data)
+    update_user_record(user_data)  # This function should be defined in data_handler.py
     return jsonify({'message': 'User record updated successfully.'}), 200
-
 
 if __name__ == '__main__':
     app.run(debug=True)

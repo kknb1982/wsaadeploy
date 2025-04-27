@@ -79,8 +79,9 @@ function loadTravel() {
 }
 
 function submitUpdateUser() {
+    const userId = "{{ session['userid'] }}";
     const userData = {
-        userid: userid,
+        userid: userId,,
         firstname: document.getElementById('firstname').value,
         surname: document.getElementById('surname').value,
         email: document.getElementById('email').value,
@@ -88,11 +89,10 @@ function submitUpdateUser() {
         role: document.getElementById('role').value
 };
 
-  // Send the updated user data to the server
-    fetch('/api/update-user', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData)
+fetch('/api/user', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(userData)
 })
 .then(response => {
     if (response.ok) {
