@@ -4,35 +4,26 @@
 
 # Importing necessary libraries
 from flask import Flask, redirect, url_for, request, jsonify, abort
-from geopy.distance import geodesic
-import TravelPlan
-
+from flask_sqlalchemy
 from geopy.distance import geodesic
 import os
 
 # Mapping the URL to the Flask app
 app = Flask(__name__, static_url_path='', static_folder='staticpages')
+app.config.from_object('config')
 
-#@app.route('/')
-#def index():
- #   return "<h1>Welcome to the WSAA Project!</h1>"
+db = SQLAlchemy(app)
 
-# Get all students enrolled in and entrants to third level courses
-#@app.route('/students', methods=['GET'])
-def get_students():
+import TravelPlan
+import admin_ids@app.route('/')
+def index():
+    return "<h1>Welcome to the WSAA Project!</h1>"
+
+# Get all travellers 
+@app.route('/travellers', methods=['GET'])
+def get_travellers():
     return "<h1>Getting all students enrolled in and entrants to third level courses</h1>"
 
-# Get a specific student 
-
-@app.route('/students/<int:student_id>', methods=['GET'])
-def get_student(student_id):
-    return f"Getting student with ID {student_id}"
-
-# Create a new student enrolled in and entrants to third level courses
-#@app.route('/students', methods=['POST'])
-#def create_student():
-    student = request.json
-    return f"Creating student: {student}", 201
 
 # Update a specific student enrolled in and entrants to third level courses
 @app.route('/students/<int:student_id>', methods=['PUT'])
@@ -104,6 +95,51 @@ from flask_login import login_required, current_user
 from models import TravelPlan  # Assuming you have TravelPlan model
 from datetime import datetime
 import GOOGLE_MAPS_API_KEY  from config
+
+from flask import Flask, render_template
+from models import TravelPlan
+
+app = Flask(__name__)
+#View all travel
+@app.route('/view_all_travel')
+def view_all_travel():
+    admin_ids = 
+    
+    if user_id not in admin_ids:
+        return "You do not have access to this page.", 403  # HTTP 403 Forbidden
+
+    # If the user is an admin, proceed with the function
+    travels = TravelPlan.query.filter_by(user_id=user_id).all()
+        return render_template('view_travel.html', travels=travels)
+    
+    
+    
+# View travel for a specific user
+@app.route('/view_travel/<int:user_id>')
+def view_travel(user_id):
+    user_id = current_user.id if current_user.is_authenticated else None
+    if user_id:
+        travels = TravelPlan.query.filter_by(user_id=user_id).all()
+    else:
+        travels = []
+    return render_template('view_travel.html')
+
+@app.route('/add_travel')
+def add_travel():
+    return render_template('add_travel.html')
+
+@app.route('/update_travel')
+def update_travel():
+    return render_template('update_travel.html')
+
+@app.route('/report')
+def report():
+    return render_template('report.html')
+
+@app.route('/logout')
+def logout():
+    # Handle logout logic here
+    return "Logged out successfully"
 
 @app.route('/api/add-travel', methods=['POST'])
 #@login_required
