@@ -6,7 +6,15 @@
     <script src="/static/js/main.js" defer></script>
     </head>
 
-    <body>
+    <body onload="loadTravel()"">
+        {% if session['userid'] %}
+            <div style="background-color: lightgray; padding: 10px;">
+                Logged in as: <strong>{{ session['userid'] }}</strong>
+                <button onclick="window.location.href='/logout'">Logout</button>
+            </div>
+        {% endif %}
+
+        
         <h1>Logged travel</h1><br>
         <div id="travelList"></div>
 

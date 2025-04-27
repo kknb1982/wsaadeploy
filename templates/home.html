@@ -6,6 +6,13 @@
     </head>
 
     <body>
+        {% if session['userid'] %}
+            <div style="background-color: lightgray; padding: 10px;">
+                Logged in as: <strong>{{ session['userid'] }}</strong>
+                <button onclick="window.location.href='/logout'">Logout</button>
+            </div>
+        {% endif %}
+        
         <h1>Travel Home Page</h1>
         <p>Welcome to the University of Galway travel site.<br> <br>
         
@@ -13,14 +20,14 @@
         </p>
         <p>Here you can add, update and view your travel history. Plus see FCO advice for your or any disasters that may have occurred near to your travel locations.
         </p>
-        <button onclick="window.location.href='/view_travel'">View travel</button><br>
-        <button onclick="window.location.href='/add_travel'">Add travel</button><br>
-        <button onclick="window.location.href='/update_travel'">Update travel</button><br>
+        <button onclick="window.location.href='/view-travel'">View travel</button><br>
+        <button onclick="window.location.href='/add-travel'">Add travel</button><br>
+        <button onclick="window.location.href='/update-travel'">Update travel</button><br>
         <button onclick="window.location.href='/report'">View disasters report</button><br><br>
 
 
         <p>If you would like to browse and search the event reports directly please go to: <a href="https://reliefweb.int/disasters">Relief Web disasters</a></p>
         <br>
         <h2>Administrators portal:</h2>
-        <button onclick="window.location.href='/admin_dashboard'">Admin dashboard</button>
+        <button onclick="window.location.href='/admin-dashboard'">Admin dashboard</button>
         </html>

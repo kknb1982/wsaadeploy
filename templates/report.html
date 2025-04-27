@@ -4,6 +4,13 @@
     <title>Disaster Risk Report</title>
     </head>
 <body>
+    {% if session['userid'] %}
+    <div style="background-color: lightgray; padding: 10px;">
+        Logged in as: <strong>{{ session['userid'] }}</strong>
+        <button onclick="window.location.href='/logout'">Logout</button>
+    </div>
+{% endif %}
+
     <h1>Report for disasters near your travel locations</h1>
     <div id="disasterReport"></div>
     <script>
