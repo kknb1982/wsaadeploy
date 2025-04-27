@@ -14,7 +14,7 @@ class TravelPlan(db.Model):
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    # Optional future optimization: cache lat/lng
+    # Cache latitude and longitude for the location
     location_lat = db.Column(db.Float)
     location_lng = db.Column(db.Float)
 
