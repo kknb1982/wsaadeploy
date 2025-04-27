@@ -91,6 +91,7 @@ def post_travel():
     return jsonify({'status': 'success'})
 
 # API to update user information
+@app.route('/api/user', methods=['POST'])
 def api_update_user():
     if 'userid' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
