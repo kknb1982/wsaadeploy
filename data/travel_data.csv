@@ -1,4 +1,4 @@
-ID,institution, First name,Surname,Student or Staff,Travel start,Travel end,Country,City
+id,institution, firstname,surname,role,travelstart,travelend,country,city
 1,August University, Kirstin,Barnett,Staff,12/05/2025,17/05/2025,Germany,G�ttingen
 1,RCSI, Kirstin,Barnett,Staff,18/05/2025,19/05/2025,Dublin,Ireland
 1,Analogous Ltd, Kirstin,Barnett,Staff,08/07/2025,11/07/2025,Zurich,Switzerland
