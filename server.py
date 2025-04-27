@@ -16,19 +16,21 @@ db = SQLAlchemy(app)
 
 import TravelPlan
 import admin_ids@app.route('/')
+
 def index():
     return "<h1>Welcome to the WSAA Project!</h1>"
 
 # Get all travellers 
 @app.route('/travellers', methods=['GET'])
 def get_travellers():
+    
     return "<h1>Getting all students enrolled in and entrants to third level courses</h1>"
 
 
-# Update a specific student enrolled in and entrants to third level courses
-@app.route('/students/<int:student_id>', methods=['PUT'])
-def update_student(student_id):
-    return f"Updating student with ID {student_id}"
+# Update a specific traveller
+@app.route('/travellers/<int:user_id>', methods=['PUT'])
+def update_traveller(user_id):
+    return f"Updating traveller with ID {user_id}"
 
 # Delete a specific student enrolled in and entrants to third level courses
 @app.route('/students/<int:student_id>', methods=['DELETE'])
@@ -36,18 +38,7 @@ def delete_student(student_id):
     return f"Deleting student with ID {student_id}"
 
 
-@app.route("/enquiry")
-def enquiry():
-    name = request.args["name"]
-    return f"<h1>Enquiry page for {name}</h1>"
-
-#@app.route("/inbody", methods=["POST"])
-#def inbody():
-    name = request.json["name"]
-    return f"<h1>Inbody page for {name}</h1>"
-
-
-#app.send_static_file('students.json')
+@app.send_static_file('students.json')
 
 
 
@@ -99,7 +90,6 @@ import GOOGLE_MAPS_API_KEY  from config
 from flask import Flask, render_template
 from models import TravelPlan
 
-app = Flask(__name__)
 #View all travel
 @app.route('/view_all_travel')
 def view_all_travel():
