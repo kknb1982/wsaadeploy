@@ -1,2 +1,5 @@
-First name,Surname,Student or Staff,Travel start,Travel end,Country,City
-Kirstin,Barnett,Staff,12/05/2025,17/05/2025,Germany,Göttingen
+ID,First name,Surname,Student or Staff,Travel start,Travel end,Country,City
+1,Kirstin,Barnett,Staff,12/05/2025,17/05/2025,Germany,Göttingen
+1,Kirstin,Barnett,Staff,18/05/2025,19/05/2025,Dublin,Ireland
+1,Kirstin,Barnett,Staff,08/07/2025,11/07/2025,Zurich,Switzerland
+12,Nils,Matsushita,Student,01/06/2025,01/09/2025,Uppsala,Sweden
