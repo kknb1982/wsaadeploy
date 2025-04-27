@@ -98,6 +98,9 @@ def api_update_user():
 
     user_data = request.get_json()
     userid = session['userid']
+    
+    print(f"Session userid: {userid}")  # Debugging log
+    print(f"Request userid: {user_data['userid']}")  # Debugging log
 
     # Ensure the userid matches the logged-in user
     if user_data['userid'] != userid:

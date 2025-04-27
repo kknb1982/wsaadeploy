@@ -79,9 +79,11 @@ function loadTravel() {
 }
 
 function submitUpdateUser() {
-    const userId = "{{ session['userid'] }}"; // Get the current user's ID
+    // Use the currentUserId variable passed from the server
+    const userId = currentUserId;
+
     const userData = {
-        userid: userId,
+        userid: userId, // Include the current user's ID
         firstname: document.getElementById('firstname').value,
         surname: document.getElementById('surname').value,
         email: document.getElementById('email').value,
