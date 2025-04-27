@@ -1,0 +1,25 @@
+<html>
+<head>
+    <title>Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>Welcome, {{ user['firstname'] }} {{ user['surname'] }}!</h1>
+        <p>Role: {{ user['role'] }}</p>
+        <p>Email: {{ user['email'] }}</p>
+        <p>Phone: {{ user['phone'] }}</p>
+
+        <div class="mt-4">
+            <button class="btn btn-primary" onclick="window.location.href='/update-user'">Update User Record</button>
+            <button class="btn btn-secondary" onclick="window.location.href='/view-travel'">View Travel</button>
+            <button class="btn btn-success" onclick="window.location.href='/add-travel'">Add Travel</button>
+            <button class="btn btn-info" onclick="window.location.href='/report'">See Reports</button>
+        </div>
+
+        <div class="mt-4">
+            <button class="btn btn-danger" onclick="window.location.href='/logout'">Logout</button>
+        </div>
+    </div>
+</body>
+</html>

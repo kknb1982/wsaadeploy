@@ -77,3 +77,33 @@ function loadTravel() {
         console.error('Error:', error);
     });
 }
+
+function submitUpdateUser() {
+    const userData = {
+        userid: userid,
+        firstname: document.getElementById('firstname').value,
+        surname: document.getElementById('surname').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        role: document.getElementById('role').value
+};
+
+  // Send the updated user data to the server
+    fetch('/api/update-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData)
+})
+.then(response => {
+    if (response.ok) {
+        alert('User record updated successfully!');
+        window.location.href = '/dashboard'; // Redirect to the dashboard
+    } else {
+        alert('Failed to update user record. Please try again.');
+    }
+})
+.catch(error => {
+    console.error('Error:', error);
+    alert('An error occurred while updating the user record.');
+});
+}

@@ -1,0 +1,29 @@
+<html>
+    <head>
+        <title>Update User</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+        <script src="/static/js/main.js" defer>
+            const userId = "{{ session['userid'] }}";
+        </script>
+    </head>
+
+    <body>
+        {% if session['userid'] %}
+        <div style="background-color: lightgray; padding: 10px;">
+            Logged in as: <strong>{{ session['userid'] }}</strong>
+            <button onclick="window.location.href='/logout'">Logout</button>
+        </div>
+    {% endif %}
+
+    <div>
+        <form id="updateUserForm">
+            <input type="text" id="firstname" placeholder="First Name" required>
+            <input type="text" id="surname" placeholder="Surname" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="text" id="phone" placeholder="Phone Number" required>
+            <input type="text" id="role" placeholder="Role (e.g., Staff, Student)">
+            <button onclick="submitUpdateUser()">Submit</button>
+        </form>>
+    </div>
+    </body>
+</html>

@@ -1,19 +1,50 @@
 import csv
-
-DATA_FILE = "https://github.com/kknb1982/WSAA_project/blob/main/data/travel_plan.csv"
-
-import csv
 import os
 
-DATA_FILE = os.path.join(os.path.dirname(__file__), '../data/travel_data.csv')
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Get the directory of this script
+TRAVEL_DATA_FILE = os.path.join(BASE_DIR, '../data/travel_data.csv')  # Adjust the path to travel_plan.csv
+USERS_DATA_FILE = os.path.join(BASE_DIR, '../data/users.csv')  # Adjust the path to users.csv
 
 def read_travel_data():
-    with open(DATA_FILE, mode='r', newline='', encoding='utf-8') as f:
+    with open(TRAVEL_DATA_FILE, mode='r', newline='', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         return list(reader)
 
 def add_travel_record(travel_info):
-    with open(DATA_FILE, mode='a', newline='', encoding='utf-8') as f:
+    with open(TRAVEL_DATA_FILE, mode='a', newline='', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=travel_info.keys())
         writer.writerow(travel_info)
+        
+def read_users_data():
+    with open(USERS_DATA_FILE, mode='r', newline='', encoding='utf-8') as f:
+        users = csv.DictReader(f)
+        return list(users)
+    
+def get_user_info(userid):
+    users = read_users_data()
+    for user in users:
+        if user['userid'] == userid:
+            return user
+    return None
 
+def get_travel_data_for_user(userid):
+    all_travel_data = read_travel_data()
+    return [travel for travel in all_travel_data if travel['id'] == userid]
+
+def update_user_record(updated_user):
+    users = read_users_data()  # Read all users
+    for user in users:
+        if user['userid'] == updated_user['userid']:
+            # Update the user's details
+            user['firstname'] = updated_user.get('firstname', user['firstname'])
+            user['surname'] = updated_user.get('surname', user['surname'])
+            user['email'] = updated_user.get('email', user['email'])
+            user['phone'] = updated_user.get('phone', user['phone'])
+            user['role'] = updated_user.get('role', user['role'])
+            break
+
+    # Write the updated users back to the CSV file
+    with open(USERS_DATA_FILE, mode='w', newline='', encoding='utf-8') as f:
+        writer = csv.DictWriter(f, fieldnames=['userid', 'firstname', 'surname', 'role', 'email', 'phone'])
+        writer.writeheader()
+        writer.writerows(users)

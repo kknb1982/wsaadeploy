@@ -4,16 +4,10 @@
     </head>
 
     <body>
-        {% if session['userid'] %}
-            <div style="background-color: lightgray; padding: 10px;">
-                Logged in as: <strong>{{ session['userid'] }}</strong>
-                <button onclick="window.location.href='/logout'">Logout</button>
-            </div>
-        {% endif %}
-        
+    
         <h1>Login</h1>
-        <form method="POST" action="/login/">
-            <input type="text" name="userid" placeholder="Enter your User ID" required><br>
+        <form method="POST" action="/login">
+            <input type="text" name="userid" placeholder="Enter your User ID" required>
             <button type="submit">Login</button>
         </form>
         <button onclick="window.location.href='/'">Back to Home</button>
