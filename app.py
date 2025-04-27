@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify, redirect, session
-from utils.data_handler import read_travel_data, add_travel_record
+from utils.data_handler import read_travel_data, add_travel_record, get_user_info, update_user_record, get_travel_data_for_user
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for sessions
@@ -12,9 +12,30 @@ def home():
 def login():
     if request.method == 'POST':
         userid = request.form.get('userid')
-        session['userid'] = userid
-        return redirect('/add-travel')
+        user_info = get_user_info(userid)
+        if user_info:
+            session['userid'] = userid
+            session['firstname'] = user_info['firstname']
+            session['surname'] = user_info['surname']
+            session['role'] = user_info['role']
+            session['email'] = user_info['email']
+            session['phone'] = user_info['phone']
+            return redirect('/dashboard')
+        else:
+            return "Invalid User ID. Please try again.", 401
     return render_template('login.html')
+
+@app.route('/dashboard')
+def dashboard():
+    if 'userid' not in session:
+        return redirect('/login')
+    return render_template('dashboard.html', user=session)
+
+@app.route('/update-user')
+def update_user():
+    if 'userid' not in session:
+        return redirect('/login')
+    return render_template('update_user.html', user=session)
 
 @app.route('/add-travel')
 def add_travel():
@@ -41,27 +62,51 @@ def admin_dashboard():
 
 @app.route('/logout')
 def logout():
-    session.pop('userid', None)
+    session.clear()
     return redirect('/login')
 
 # API to get all travel records
 @app.route('/api/travel', methods=['GET'])
 def get_travel():
-    data = read_travel_data()
-    user = session.get('userid', None)
-    if user:
-        filtered = [record for record in data if record['userid'] == user]
-        return jsonify(filtered)
-    else:
+    if 'userid' not in session:
         return jsonify([])
 
+    user_id = session['userid']
+    travel_data = get_travel_data_for_user(user_id)
+    return jsonify(travel_data)
+
 # API to add a new travel record
-@app.route('/api/travel', methods=['POST'])
+app.route('/api/travel', methods=['POST'])
 def post_travel():
+    if 'userid' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+
     travel_info = request.json
-    travel_info['username'] = session.get('username')
+    travel_info['id'] = session['userid']  # Pre-fill user ID from session
+    travel_info['firstname'] = session['firstname']
+    travel_info['surname'] = session['surname']
+    travel_info['role'] = session['role']
+    travel_info['institution'] = 'MyUniversity'  # Example institution
     add_travel_record(travel_info)
     return jsonify({'status': 'success'})
+
+# API to update user information
+@app.route('/api/user', methods=['POST'])
+def update_user():
+    if 'userid' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    user_data = request.get_json()
+    userid = session['userid']
+
+    # Ensure the userid matches the logged-in user
+    if user_data['userid'] != userid:
+        return jsonify({'error': 'Unauthorized'}), 403
+
+    # Update the user record
+    update_user_record(user_data)
+    return jsonify({'message': 'User record updated successfully.'}), 200
+
 
 if __name__ == '__main__':
     app.run(debug=True)
