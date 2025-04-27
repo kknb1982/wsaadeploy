@@ -1,0 +1,32 @@
+<html>
+<head>
+    <title>Bit coin price</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    </head>
+<body>
+    <button onclick="getAll(processGetAll)">Click me</button><br/>
+    </body>
+<script>
+    function getAll(callback) {
+        $.ajax({
+            "url": "https:andrewbeatty1.pythonanywhere.com/books",
+            "method": "GET",
+            "data": "",
+            "dataType": "JSON",
+            "success": function(result) {
+                //console.log(data);
+                callback(result)
+            },
+            "error": function(xhr, status, error) {
+                console.log("Error loading content:" +status+ "msg:" +error);
+            }
+        });
+    }
+
+    function processGetAll(result) {
+        console.log("in process")
+        console.log(result)
+    }
+    getAll(processGetAll)
+</script>
+</html>

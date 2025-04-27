@@ -19,7 +19,7 @@
           
             <label>End Date:</label>
             <input type="date" name="end_date" required><br>
-          
+        
             <button type="submit">Add Travel</button>
             <h2>Travel List</h2>
             <table id="travelTable" border="1">
@@ -41,7 +41,7 @@
                 let countrySlugMap = {};
 
                 async function loadCountrySlugs() {
-                const response = await fetch('/staticpages/country_slugs.json'); // Save it into /static/
+                const response = await fetch('/data/country_slugs.json'); 
                 countrySlugMap = await response.json();
                 }
 

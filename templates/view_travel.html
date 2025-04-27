@@ -6,14 +6,14 @@
     </head>
 
     <body>
-        <h1>Logged travel</h1>
+        <h1>Logged travel</h1><br>
         <div id="filterForm">
             <h2>Filter Travels</h2>
-            <label for="travelType">Travel Type:</label>
-            start date<input type = "date" id = "start_date"><br>
-            end date<input type = "date" id = "end_date"><br>
-            city<input type = "text" id = "city"><br>
-            country<input type = "text" id = "country"><br>
+
+            Start date<input type = "date" id = "start_date"><br>
+            End date<input type = "date" id = "end_date"><br>
+            City<input type = "text" id = "city"><br>
+            Country<input type = "text" id = "country"><br>
         </div>>
             <button id="filterBtn">Apply Filters</button>
             <button id="clearBtn">Clear Filters</button>
@@ -28,8 +28,15 @@
                 <th>End Date</th>
             </tr>
             </thead>
-            <tbody id="travelTableBody">
-            <!-- Travel rows will be inserted here -->
+            <tbody>
+                {% for travel in travels %}
+                <tr>
+                    <td>{{ travel.location_city }}</td>
+                    <td>{{ travel.location_country }}</td>
+                    <td>{{ travel.start_date }}</td>
+                    <td>{{ travel.end_date }}</td>
+                </tr>
+                {% endfor %}
             </tbody>
         </table>
         
