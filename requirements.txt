@@ -1,9 +1,1 @@
 flask
-requests
-pandas
-geopy
-flask-login 
-flask-bcrypt 
-flask-sqlalchemy
-pymysql
-mysql-connector-python
