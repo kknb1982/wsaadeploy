@@ -97,7 +97,11 @@ fetch('/api/user', {
 .then(response => {
     if (response.ok) {
         alert('User record updated successfully!');
-        window.location.href = '/dashboard'; // Redirect to the dashboard
+        const formContainer = document.getElementById('updateUserFormContainer');
+        formContainer.innerHTML = `
+            <p style="color: green;">User record updated successfully!</p>
+            <button onclick="window.location.href='/dashboard'" class="btn btn-primary">Back to Dashboard</button>
+        `;
     } else {
         alert('Failed to update user record. Please try again.');
     }

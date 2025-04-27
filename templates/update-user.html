@@ -1,9 +1,7 @@
 <html>
     <head>
         <title>Update User</title>
-        <script src="/static/js/main.js" defer>
-            const userId = "{{ session['userid'] }}";
-        </script>
+        <script src="/static/js/main.js" defer></script>
     </head>
 
     <body>
@@ -12,17 +10,17 @@
             Logged in as: <strong>{{ session['userid'] }}</strong>
             <button onclick="window.location.href='/logout'">Logout</button>
         </div>
-    {% endif %}
+        {% endif %}
 
-    <div>
-        <form id="updateUserForm">
-            First name <input type="text" id="firstname" placeholder="First Name" value="{{ user['firstname'] }}" required><br>
-            Surname <input type="text" id="surname" placeholder="Surname" value="{{ user['surname'] }}" required><br>
-            Email address<input type="email" id="email" placeholder="Email" value="{{ user['email'] }}" required><br>
-            Phone <input type="text" id="phone" placeholder="Phone Number" value="{{ user['phone'] }}" required><br>
-            Role <input type="text" id="role" placeholder="Role (e.g., Staff, Student)" value="{{ user['role'] }}"><br>
-            <button type="submit" onclick="submitUpdateUser()">Submit</button>
-        </form>
-    </div>
+        <div id="updateUserFormContainer">
+            <form id="updateUserForm" onsubmit="event.preventDefault(); submitUpdateUser();">
+                First name <input type="text" id="firstname" placeholder="First Name" value="{{ user['firstname'] }}" required><br>
+                Surname <input type="text" id="surname" placeholder="Surname" value="{{ user['surname'] }}" required><br>
+                Email address <input type="email" id="email" placeholder="Email" value="{{ user['email'] }}" required><br>
+                Phone <input type="text" id="phone" placeholder="Phone Number" value="{{ user['phone'] }}" required><br>
+                Role <input type="text" id="role" placeholder="Role (e.g., Staff, Student)" value="{{ user['role'] }}"><br>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
     </body>
 </html>
