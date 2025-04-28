@@ -1,5 +1,5 @@
-id,institution, firstname,surname,role,travelstart,travelend,country,city
-1,August University, Kirstin,Barnett,Staff,12/05/2025,17/05/2025,Germany,G�ttingen
-1,RCSI, Kirstin,Barnett,Staff,18/05/2025,19/05/2025,Dublin,Ireland
-1,Analogous Ltd, Kirstin,Barnett,Staff,08/07/2025,11/07/2025,Zurich,Switzerland
-12,Uppsala University, Nils,Matsushita,Student,01/06/2025,01/09/2025,Uppsala,Sweden
+id,institution,travelstart,travelend,country,city
+S1,August University,12/05/2025,17/05/2025,Germany,G�ttingen
+S1,RCSI, 18/05/2025,19/05/2025,Dublin,Ireland
+S1,Analogous Ltd, 08/07/2025,11/07/2025,Zurich,Switzerland
+S3,Uppsala University, 01/06/2025,01/09/2025,Uppsala,Sweden

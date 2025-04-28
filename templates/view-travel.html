@@ -6,6 +6,8 @@
     <script src="/static/js/main.js" defer></script>
     </head>
 
+    <h1>Recorded travel for {{ user['firstname'] }} {{ user['surname'] }}</h1>
+
     <body onload="loadTravel()"">
         {% if session['userid'] %}
             <div style="background-color: lightgray; padding: 10px;">
