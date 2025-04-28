@@ -31,6 +31,30 @@ def get_travel_data_for_user(userid):
     all_travel_data = read_travel_data()
     return [travel for travel in all_travel_data if travel['id'] == userid]
 
+def get_travel_by_id(travel_id):
+    all_travel_data = read_travel_data()
+    for travel in all_travel_data:
+        if travel['id'] == travel_id:
+            return travel
+    return None
+
+def update_travel_record(updated_travel):
+    all_travel_data = read_travel_data()
+    for travel in all_travel_data:
+        if travel['id'] == updated_travel['id']:
+            travel['institution'] = updated_travel.get('institution', travel['institution'])
+            travel['city'] = updated_travel.get('city', travel['city'])
+            travel['country'] = updated_travel.get('country', travel['country'])
+            travel['travelstart'] = updated_travel.get('travelstart', travel['travelstart'])
+            travel['travelend'] = updated_travel.get('travelend', travel['travelend'])
+            break
+
+    # Write the updated data back to the CSV file
+    with open(TRAVEL_DATA_FILE, mode='w', newline='', encoding='utf-8') as f:
+        writer = csv.DictWriter(f, fieldnames=['id', 'institution', 'city', 'country', 'travelstart', 'travelend'])
+        writer.writeheader()
+        writer.writerows(all_travel_data)
+
 def update_user_record(updated_user):
     users = read_users_data()  # Read all users
     for user in users:

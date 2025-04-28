@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify, redirect, session
-from utils.data_handler import read_travel_data, add_travel_record, get_user_info, update_user_record, get_travel_data_for_user
+from utils.data_handler import get_travel_by_id, add_travel_record, update_travel_record, get_user_info, update_user_record, get_travel_data_for_user
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for sessions
@@ -48,13 +48,27 @@ def add_travel():
 def view_travel():
     if 'userid' not in session:
         return redirect('/login')
-    
-    # Pass the user data from the session to the template
+        # Pass the user data from the session to the template
     user = {       
         'userid': session['userid'],
         'firstname': session['firstname'],
         'surname': session['surname']}
     return render_template('view-travel.html', user=user)
+    
+@app.route('/update-travel')
+def update_travel():
+    if 'userid' not in session:
+        return redirect('/login')  # Redirect to login if the user is not logged in
+
+    travel_id = request.args.get('id')  # Get the travel ID from the query parameter
+    travel_data = get_travel_by_id(travel_id)  # Fetch the travel details by ID
+
+    if not travel_data:
+        return "Travel record not found.", 404
+
+    return render_template('update-travel.html', travel=travel_data)
+    
+
 
 @app.route('/report')
 def report():
@@ -116,5 +130,18 @@ def api_update_user():
     update_user_record(user_data)  # This function should be defined in data_handler.py
     return jsonify({'message': 'User record updated successfully.'}), 200
 
+@app.route('/api/update-travel', methods=['POST'])
+def api_update_travel():
+    if 'userid' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    travel_data = request.get_json()
+    update_travel_record(travel_data)  # Update the travel record in the CSV
+    return jsonify({'message': 'Travel record updated successfully.'}), 200
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)
+    
+

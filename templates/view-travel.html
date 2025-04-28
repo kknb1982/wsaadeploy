@@ -6,8 +6,6 @@
     <script src="/static/js/main.js" defer></script>
     </head>
 
-    <h1>Recorded travel for {{ user['firstname'] }} {{ user['surname'] }}</h1>
-
     <body onload="loadTravel()"">
         {% if session['userid'] %}
             <div style="background-color: lightgray; padding: 10px;">
@@ -17,9 +15,15 @@
         {% endif %}
 
         
-        <h1>Logged travel</h1><br>
-        <div id="travelList"></div>
-
-        <button onclick="window.location.href='/'">Back to Home</button>
+        <div id="updateTravelFormContainer">
+            <form id="updateTravelForm">
+                Institution <input type="text" id="institution" value="{{ travel['institution'] }}" required><br>
+                City <input type="text" id="city" value="{{ travel['city'] }}" required><br>
+                Country <input type="text" id="country" value="{{ travel['country'] }}" required><br>
+                Travel Start <input type="date" id="travelstart" value="{{ travel['travelstart'] }}" required><br>
+                Travel End <input type="date" id="travelend" value="{{ travel['travelend'] }}" required><br>
+                <button type="button" onclick="submitUpdateTravel()">Submit</button>
+            </form>
+        </div>
     </body>
-    </html>
+</html>

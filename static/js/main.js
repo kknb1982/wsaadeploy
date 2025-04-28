@@ -38,9 +38,6 @@ function loadTravel() {
         const thead = document.createElement('thead');
         thead.innerHTML = `
             <tr>
-                <th>First Name</th>
-                <th>Surname</th>
-                <th>Role</th>
                 <th>Institution</th>
                 <th>City</th>
                 <th>Country</th>
@@ -56,15 +53,14 @@ function loadTravel() {
         data.forEach(travel => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${travel.firstname}</td>
-                <td>${travel.surname}</td>
-                <td>${travel.role}</td>
                 <td>${travel.institution}</td>
                 <td>${travel.city}</td>
                 <td>${travel.country}</td>
                 <td>${travel.travelstart}</td>
                 <td>${travel.travelend}</td>
-                <td> <button class="btn btn-primary btn-sm" onclick="updateTravel(${travel.id})">Update</button></td>
+                <td> 
+                    <button class="btn btn-primary btn-sm" onclick="window.location.href='/update-travel?id=${travel.id}'">Update</button>
+                </td>
             `;
             tbody.appendChild(row);
         });
@@ -75,6 +71,35 @@ function loadTravel() {
     })
     .catch(error => {
         console.error('Error:', error);
+    });
+}
+
+function submitUpdateTravel() {
+    const travelData = {
+        id: new URLSearchParams(window.location.search).get('id'), // Get the travel ID from the URL
+        institution: document.getElementById('institution').value,
+        city: document.getElementById('city').value,
+        country: document.getElementById('country').value,
+        travelstart: document.getElementById('travelstart').value,
+        travelend: document.getElementById('travelend').value
+    };
+
+    fetch('/api/update-travel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(travelData)
+    })
+    .then(response => {
+        if (response.ok) {
+            alert('Travel record updated successfully!');
+            window.location.href = '/view-travel'; // Redirect back to the travel list
+        } else {
+            alert('Failed to update travel record. Please try again.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while updating the travel record.');
     });
 }
 
