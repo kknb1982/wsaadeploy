@@ -12,8 +12,9 @@
             <button onclick="window.location.href='/logout'">Logout</button>
         </div>
         {% endif %}
-        <p>Update your contact details below:</p>
+
         <div id="updateUserFormContainer">
+            <p>Update your contact details below:</p>
             <form id="updateUserForm">
                 First name <input type="text" id="firstname" placeholder="First Name" value="{{ user['firstname'] }}" required><br>
                 Surname <input type="text" id="surname" placeholder="Surname" value="{{ user['surname'] }}" required><br>

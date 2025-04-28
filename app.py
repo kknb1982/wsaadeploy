@@ -48,7 +48,13 @@ def add_travel():
 def view_travel():
     if 'userid' not in session:
         return redirect('/login')
-    return render_template('view-travel.html')
+    
+    # Pass the user data from the session to the template
+    user = {       
+        'userid': session['userid'],
+        'firstname': session['firstname'],
+        'surname': session['surname']}
+    return render_template('view-travel.html', user=user)
 
 @app.route('/report')
 def report():
