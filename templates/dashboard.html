@@ -6,12 +6,9 @@
 <body>
     <div class="container mt-4">
         <h1>Welcome, {{ user['firstname'] }} {{ user['surname'] }}!</h1>
-        <p>Role: {{ user['role'] }}</p>
-        <p>Email: {{ user['email'] }}</p>
-        <p>Phone: {{ user['phone'] }}</p>
 
         <div class="mt-4">
-            <button class="btn btn-primary" onclick="window.location.href='/update-user'">Update User Record</button>
+            <button class="btn btn-primary" onclick="window.location.href='/update-user'">Update Contact Details</button>
             <button class="btn btn-secondary" onclick="window.location.href='/view-travel'">View Travel</button>
             <button class="btn btn-success" onclick="window.location.href='/add-travel'">Add Travel</button>
             <button class="btn btn-info" onclick="window.location.href='/report'">See Reports</button>

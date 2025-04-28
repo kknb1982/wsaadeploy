@@ -1,17 +1,18 @@
 <html>
     <head>
-        <title>Update User</title>
+        <title>Update Contact Details</title>
         <script src="/static/js/main.js" defer></script>
     </head>
 
     <body>
+        <h1>Update Contact Details</h1>
         {% if session['userid'] %}
         <div style="background-color: lightgray; padding: 10px;">
             Logged in as: <strong>{{ session['userid'] }}</strong>
             <button onclick="window.location.href='/logout'">Logout</button>
         </div>
         {% endif %}
-
+        <p>Update your contact details below:</p>
         <div id="updateUserFormContainer">
             <form id="updateUserForm">
                 First name <input type="text" id="firstname" placeholder="First Name" value="{{ user['firstname'] }}" required><br>
