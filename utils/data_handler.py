@@ -34,7 +34,7 @@ def get_travel_data_for_user(userid):
 def get_travel_by_id(travel_id):
     all_travel_data = read_travel_data()
     for travel in all_travel_data:
-        if travel['id'] == travel_id:
+        if travel['travelid'] == travel_id:
             return travel
     return None
 

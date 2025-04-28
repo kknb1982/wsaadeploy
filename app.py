@@ -93,6 +93,8 @@ def get_travel():
 
     user_id = session['userid']
     travel_data = get_travel_data_for_user(user_id)
+    print("User ID:", user_id)
+    print("Travel Data:", travel_data)
     return jsonify(travel_data)
 
 # API to add a new travel record

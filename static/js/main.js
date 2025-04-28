@@ -24,10 +24,20 @@ function submitTravel() {
 
 function loadTravel() {
     fetch('/api/travel')
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
         const travelList = document.getElementById('travelList');
         travelList.innerHTML = ''; // Clear any existing content
+
+        if (data.length === 0) {
+            travelList.innerHTML = '<p>No travel records found.</p>';
+            return;
+        }
 
         // Create a table element
         const table = document.createElement('table');
@@ -58,8 +68,8 @@ function loadTravel() {
                 <td>${travel.country}</td>
                 <td>${travel.travelstart}</td>
                 <td>${travel.travelend}</td>
-                <td> 
-                    <button class="btn btn-primary btn-sm" onclick="window.location.href='/update-travel?id=${travel.id}'">Update</button>
+                <td>
+                    <button class="btn btn-primary btn-sm" onclick="window.location.href='/update-travel?id=${travel.travelid}'">Update</button>
                 </td>
             `;
             tbody.appendChild(row);
@@ -71,6 +81,8 @@ function loadTravel() {
     })
     .catch(error => {
         console.error('Error:', error);
+        const travelList = document.getElementById('travelList');
+        travelList.innerHTML = '<p>An error occurred while loading travel records. Please try again later.</p>';
     });
 }
 
