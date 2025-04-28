@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify, redirect, session
 from utils.data_handler import get_travel_by_id, add_travel_record, update_travel_record, get_user_info, update_user_record, get_travel_data_for_user
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for sessions
@@ -65,7 +66,13 @@ def update_travel():
 
     if not travel_data:
         return "Travel record not found.", 404
-
+    
+    print("Travel Data:", travel_data)  # Debugging log
+    try: 
+        travel_data['travelstart'] = datetime.strptime(travel_data['travelstart'], '%Y-%m-%d').strftime('%d/%m/%Y')
+        travel_data['travelend'] = datetime.strptime(travel_data['travelend'], '%Y-%m-%d').strftime('%d/%m/%Y')
+    except ValueError:
+        return "Invalid date format in travel record.", 400
     return render_template('update-travel.html', travel=travel_data)
     
 
