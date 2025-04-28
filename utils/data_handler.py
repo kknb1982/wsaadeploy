@@ -29,7 +29,7 @@ def get_user_info(userid):
 
 def get_travel_data_for_user(userid):
     all_travel_data = read_travel_data()
-    return [travel for travel in all_travel_data if travel['id'] == userid]
+    return [travel for travel in all_travel_data if travel['userid'] == userid]
 
 def get_travel_by_id(travel_id):
     all_travel_data = read_travel_data()
