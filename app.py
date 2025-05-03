@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify, redirect, session
 from utils.data_handler import get_travel_by_id, read_travel_data, add_travel_record, update_travel_record, get_user_info, update_user_record, get_travel_data_for_user
-from utils.webzio_client import check_travel_alerts, fetch_news
+from WSAA_project.utils.newsAPI_client import check_travel_alerts, fetch_news
 from datetime import datetime
 
 app = Flask(__name__)
