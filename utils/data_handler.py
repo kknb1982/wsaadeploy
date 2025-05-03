@@ -81,14 +81,11 @@ def current_travel():
     three_days_ago = today - timedelta(days=3)
     
     for travel in all_travel_data:
-        travel_start = datetime.strptime(travel['travelstart'], '%d/%m/%Y')
-        travel_end = datetime.strptime(travel['travelend'], '%d/%m/%Y')
+        travel_start = datetime.strptime(travel['travelstart'].strip(), '%d/%m/%Y')
+        travel_end = datetime.strptime(travel['travelend'].strip(), '%d/%m/%Y')
 
         # Check if the travel is ongoing or ended within the last three days
         if (travel_start <= today <= travel_end) or (three_days_ago <= travel_end <= today):
             current_travel.append(travel)
 
     return current_travel
-
-travels = current_travel()
-print(travels)  # Print the current travel records for debugging
