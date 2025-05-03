@@ -2,6 +2,7 @@
     <head>
         <title>Update Contact Details</title>
         <script src="/static/js/main.js" defer></script>
+        <link href="/static/css/style.css" rel="stylesheet">
     </head>
 
     <body>
@@ -9,7 +10,7 @@
         {% if session['userid'] %}
         <div style="background-color: lightgray; padding: 10px;">
             Logged in as: <strong>{{ session['userid'] }}</strong>
-            <button onclick="window.location.href='/logout'">Logout</button>
+            <button class="button button5" onclick="window.location.href='/logout'">Logout</button>
         </div>
         {% endif %}
 
@@ -21,9 +22,10 @@
                 Email address <input type="email" id="email" placeholder="Email" value="{{ user['email'] }}" required><br>
                 Phone <input type="text" id="phone" placeholder="Phone Number" value="{{ user['phone'] }}" required><br>
                 Role <input type="text" id="role" placeholder="Role (e.g., Staff, Student)" value="{{ user['role'] }}"><br>
-                <button type="button" onclick="submitUpdateUser()">Submit</button>
+                <button class="button button1" onclick="submitUpdateUser()">Submit</button>
             </form>
         </div>
+        <button class="button button2" type="button" onclick="window.location.href='/dashboard'">Back to Dashboard</button><br><br>
         <script>
             const currentUserId = "{{ session['userid'] }}";
         </script>

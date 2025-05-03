@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify, redirect, session
-from utils.data_handler import get_travel_by_id, add_travel_record, update_travel_record, get_user_info, update_user_record, get_travel_data_for_user
+from utils.data_handler import get_travel_by_id, read_travel_data, add_travel_record, update_travel_record, get_user_info, update_user_record, get_travel_data_for_user
+from utils.webzio_client import check_travel_alerts, fetch_news
 from datetime import datetime
 
 app = Flask(__name__)
@@ -67,25 +68,42 @@ def update_travel():
     if not travel_data:
         return "Travel record not found.", 404
     
-    print("Travel Data:", travel_data)  # Debugging log
     try: 
-        travel_data['travelstart'] = datetime.strptime(travel_data['travelstart'], '%Y-%m-%d').strftime('%d/%m/%Y')
-        travel_data['travelend'] = datetime.strptime(travel_data['travelend'], '%Y-%m-%d').strftime('%d/%m/%Y')
-    except ValueError:
-        return "Invalid date format in travel record.", 400
+        travel_data['travelstart'] = datetime.strptime(travel_data['travelstart'], '%d/%m/%Y').strftime('%Y-%m-%d')
+        travel_data['travelend'] = datetime.strptime(travel_data['travelend'], '%d/%m/%Y').strftime('%Y-%m-%d')
+    except (ValueError, KeyError) as e:
+        travel_data['travelstart'] = ''
+        travel_data['travelend'] = ''
     return render_template('update-travel.html', travel=travel_data)
     
-
-
-@app.route('/report')
+@app.route('/personal-report')
 def report():
     if 'userid' not in session:
         return redirect('/login')
-    return render_template('report.html')
+    user = {       
+        'userid': session['userid'],
+        'firstname': session['firstname'],
+        'surname': session['surname']}
+    travel_data = get_travel_data_for_user(user['userid'])
+    if not travel_data:
+        return "No travel records found for this user.", 404
+    
+    alerts = check_travel_alerts()
+    
+    for travel in travel_data:
+        travel['alerts'] = next((alert['articles'] for alert in alerts if alert['travelid'] == travel['travelid']), [])
+    return render_template('personal-report.html', user=user, travel_data=travel_data)
 
 @app.route('/admin-dashboard')
 def admin_dashboard():
-    return render_template('admin-dashboard.html')
+    if 'userid' not in session:
+        return redirect('/login')
+    
+    travel_data = read_travel_data()  # Fetch all travel data
+    alerts = check_travel_alerts()  # Fetch travel alerts
+    for travel in travel_data:
+        travel['alerts'] = next((alert['articles'] for alert in alerts if alert['travelid'] == travel['travelid']), [])
+    return render_template('admin-dashboard.html', travel_data=travel_data)
 
 @app.route('/logout')
 def logout():

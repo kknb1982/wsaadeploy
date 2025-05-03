@@ -2,13 +2,14 @@
     <head>
         <title>Travel_form</title>
         <script src="/static/js/main.js" defer></script>
+        <link href="/static/css/style.css" rel="stylesheet">
     </head>
 
     <body>
         {% if session['userid'] %}
             <div style="background-color: lightgray; padding: 10px;">
                 Logged in as: <strong>{{ session['userid'] }}</strong>
-                <button onclick="window.location.href='/logout'">Logout</button>
+                <button class="button button2" onclick="window.location.href='/logout'">Logout</button>
             </div>
         {% endif %}
     
@@ -24,7 +25,7 @@
             <input type="date" id="departure_date">
             <input type="date" id="return_date">
         
-            <button onclick="submitTravel()">Submit</button>
+            <button class="button button1" onclick="submitTravel()">Submit</button>
             <button onclick="window.location.href='/'">Back to Home</button>
         </body>
 </html>

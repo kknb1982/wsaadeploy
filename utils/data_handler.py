@@ -1,5 +1,6 @@
 import csv
 import os
+from datetime import timedelta, datetime
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Get the directory of this script
 TRAVEL_DATA_FILE = os.path.join(BASE_DIR, '../data/travel_data.csv')  # Adjust the path to travel_plan.csv
@@ -72,3 +73,22 @@ def update_user_record(updated_user):
         writer = csv.DictWriter(f, fieldnames=['userid', 'firstname', 'surname', 'role', 'email', 'phone'])
         writer.writeheader()
         writer.writerows(users)
+        
+def current_travel():
+    all_travel_data = read_travel_data()
+    current_travel = []
+    today = datetime.now()
+    three_days_ago = today - timedelta(days=3)
+    
+    for travel in all_travel_data:
+        travel_start = datetime.strptime(travel['travelstart'], '%d/%m/%Y')
+        travel_end = datetime.strptime(travel['travelend'], '%d/%m/%Y')
+
+        # Check if the travel is ongoing or ended within the last three days
+        if (travel_start <= today <= travel_end) or (three_days_ago <= travel_end <= today):
+            current_travel.append(travel)
+
+    return current_travel
+
+travels = current_travel()
+print(travels)  # Print the current travel records for debugging

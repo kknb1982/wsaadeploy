@@ -12,11 +12,6 @@ import os
 app = Flask(__name__, static_url_path='', static_folder='staticpages')
 app.config.from_object('config')
 
-db = SQLAlchemy(app)
-
-import TravelPlan
-import admin_ids@app.route('/')
-
 def index():
     return "<h1>Welcome to the WSAA Project!</h1>"
 

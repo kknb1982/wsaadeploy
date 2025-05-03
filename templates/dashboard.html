@@ -2,20 +2,33 @@
 <head>
     <title>Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
 </head>
 <body>
     <div class="container mt-4">
         <h1>Welcome, {{ user['firstname'] }} {{ user['surname'] }}!</h1>
 
         <div class="mt-4">
-            <button class="btn btn-primary" onclick="window.location.href='/update-user'">Update Contact Details</button>
-            <button class="btn btn-secondary" onclick="window.location.href='/view-travel'">View Travel</button>
-            <button class="btn btn-success" onclick="window.location.href='/add-travel'">Add Travel</button>
-            <button class="btn btn-info" onclick="window.location.href='/report'">See Reports</button>
+            <button class="button button1" onclick="window.location.href='/update-user'">Update Contact Details</button>
+            Please make sure your contact details are kept up to date so Global Galway can contact you if an issue occurs
+            <br>
+
+            <button class="button button2" onclick="window.location.href='/view-travel'">View Travel</button>
+            View your recorded travel history
+            <br>
+
+            <button class="button button3" onclick="window.location.href='/add-travel'">Add Travel</button>
+            Add a new travel record
+            <br>
+
+            <button class="button button4" onclick="window.location.href='/personal-report'">See Reports</button>
+            View FCO reports and see alerts of disasters and events in your travel locations
+            <br>
+
         </div>
 
         <div class="mt-4">
-            <button class="btn btn-danger" onclick="window.location.href='/logout'">Logout</button>
+            <button class="button button5 onclick="window.location.href='/logout'">Logout</button>
         </div>
     </div>
 </body>

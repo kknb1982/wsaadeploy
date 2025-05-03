@@ -2,13 +2,14 @@
     <head>
         <title>Update travel</title>
         <script src="/static/js/main.js" defer></script>
+        <link href="/static/css/style.css" rel="stylesheet">
     </head>
 
     <body onload="loadTravel()">
         {% if session['userid'] %}
             <div style="background-color: lightgray; padding: 10px;">
                 Logged in as: <strong>{{ session['userid'] }}</strong>
-                <button onclick="window.location.href='/logout'">Logout</button>
+                <button class="button button5" href="window.location.href='/logout'">Logout</button>
             </div>
         {% endif %}
         
@@ -22,10 +23,10 @@
                 Country <input type="text" id="country" value="{{ travel['country'] }}" required><br>
                 Travel Start <input type="date" id="travelstart" value="{{ travel['travelstart'] }}" required><br>
                 Travel End <input type="date" id="travelend" value="{{ travel['travelend'] }}" required><br>
-                <button type="button" onclick="submitUpdateTravel()">Submit</button>
+                <br><button class= "button button 1" type="button" onclick="submitUpdateTravel()">Submit</button>
             </form>
-                <br><button type="button" onclick="window.location.href='/view-travel'">Back to Travel List</button>
-                <br><button type="button" onclick="window.location.href='/dashboard'">Back to Dashboard</button>
+                <br><button class="button button3" type="button" onclick="window.location.href='/view-travel'">Back to Travel List</button>
+                <br><button class="button button2"type="button" onclick="window.location.href='/dashboard'">Back to Dashboard</button>
         
     </body> 
 </html>
