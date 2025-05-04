@@ -1,8 +1,9 @@
 userid,travelid,institution,travelstart,travelend,country,city
 S1,1,August University,2025-05-12,2025-05-17,Germany,G�ttingen
-S1,2,RCSI,2025-05-18,2025-05-19,Dublin,Ireland
-S1,3,Analogous Ltd,2025-07-08,2025-07-11,Zurich,Switzerland
-S3,4,Uppsala University,2025-04-01,2025-09-01,Uppsala,Sweden
-S2,5,University of Amsterdam,2025-05-01,2025-09-01,Amsterdam,Netherlands
-S4,6,University of Melbourne,2025-05-01,2025-09-01,Melbourne,Australia
-S2,7,Ghent University,2025-09-01,2025-10-01,Ghent,Netherlands
+S1,2,RCSI,2025-05-18,2025-05-19,Ireland,Dublin
+S1,3,Analogous Ltd,2025-07-08,2025-07-11,Switzerland,Zurich
+S3,4,Uppsala University,2025-04-01,2025-09-01,Sweden,Uppsala
+S2,5,University of Amsterdam,2025-05-01,2025-09-01,Netherlands,Amsterdam
+S4,6,University of Melbourne,2025-05-01,2025-09-01,Australia,Melbourne
+S2,7,Ghent University,2025-09-01,2025-10-01,Netherlands,Ghent
+S1,8,Ghent University,2025-09-01,2025-10-01,Ghent,Netherlands

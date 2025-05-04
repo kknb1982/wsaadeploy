@@ -6,7 +6,7 @@
 from flask import Flask, redirect, url_for, request, jsonify, abort
 from flask_sqlalchemy
 from geopy.distance import geodesic
-import os
+
 
 # Mapping the URL to the Flask app
 app = Flask(__name__, static_url_path='', static_folder='staticpages')

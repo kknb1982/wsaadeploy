@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify, redirect, session
-from utils.data_handler import get_travel_by_id, current_travel, add_travel_record, update_travel_record, get_user_info, update_user_record, get_travel_data_for_user
+from utils.data_handler import read_travel_data, get_travel_by_id, current_travel, add_travel_record, update_travel_record, get_user_info, update_user_record, get_travel_data_for_user
 from utils.newsAPI_client import fetch_news
 from utils.countries_API import get_countries
 from datetime import datetime
@@ -35,11 +35,15 @@ def dashboard():
         return redirect('/login')
     return render_template('dashboard.html', user=session)
 
-@app.route('/update-user')
+@app.route('/update-user/<int:userid>')
 def update_user():
     if 'userid' not in session:
         return redirect('/login')
-    return render_template('update-user.html', user=session)
+
+    user_data = get_user_info(userid)
+    if not user_data:
+        return "User not found.", 404
+    return render_template('update-user.html', user=user_data)
 
 @app.route('/add-travel')
 def add_travel():
@@ -69,13 +73,8 @@ def update_travel():
 
     if not travel_data:
         return "Travel record not found.", 404
-    
-    try: 
-        travel_data['travelstart'] = datetime.strptime(travel_data['travelstart'], '%d/%m/%Y').strftime('%Y-%m-%d')
-        travel_data['travelend'] = datetime.strptime(travel_data['travelend'], '%d/%m/%Y').strftime('%Y-%m-%d')
-    except (ValueError, KeyError) as e:
-        travel_data['travelstart'] = ''
-        travel_data['travelend'] = ''
+    travel_data['travelstart'] = datetime.strptime(travel_data['travelstart'], '%Y-%m-%d').strftime('%d/%m/%Y')
+    travel_data['travelend'] = datetime.strptime(travel_data['travelend'], '%Y-%m-%d').strftime('%d/%m/%Y')
     return render_template('update-travel.html', travel=travel_data)
     
 @app.route('/personal-report')
@@ -175,7 +174,21 @@ def api_update_travel():
     update_travel_record(travel_data)  # Update the travel record in the CSV
     return jsonify({'message': 'Travel record updated successfully.'}), 200
 
+@app.route('/api/travel/<travel_id>', methods=['GET'])
+def get_travel_by_id(travel_id):
+    try:
+        # Read all travel data
+        all_travel_data = read_travel_data()
 
+        # Find the travel record with the matching ID
+        travel = next((t for t in all_travel_data if t['travelid'] == travel_id), None)
+        if travel:
+            return jsonify(travel), 200
+        else:
+            return jsonify({'error': 'Travel record not found'}), 404
+    except Exception as e:
+        print(f"Error fetching travel record: {e}")
+        return jsonify({'error': 'An error occurred while fetching the travel record'}), 500
 
 if __name__ == '__main__':
     print("Loading countries data...")

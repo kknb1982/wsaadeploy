@@ -34,6 +34,7 @@ function submitTravel() {
     });
 }
 
+// All travel records 
 function loadTravel() {
     fetch('/api/travel')
     .then(response => {
@@ -78,8 +79,8 @@ function loadTravel() {
                 <td>${travel.institution}</td>
                 <td>${travel.city}</td>
                 <td>${travel.country}</td>
-                <td>${travel.travelstart}</td>
-                <td>${travel.travelend}</td>
+                <td>${formatDateToDDMMYYYY(travel.travelstart)}</td>
+                <td>${formatDateToDDMMYYYY(travel.travelend)}</td>
                 <td>
                     <button class="btn btn-primary btn-sm" onclick="window.location.href='/update-travel?id=${travel.travelid}'">Update</button>
                 </td>
@@ -98,14 +99,38 @@ function loadTravel() {
     });
 }
 
+// Loads travel record for update
+function loadTravelForUpdate() {
+    const travelId = new URLSearchParams(window.location.search).get('id'); // Get the travel ID from the URL
+
+    fetch(`/api/travel/${travelId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+        }
+            return response.json();
+        })
+        .then(travel => {
+            document.getElementById('institution').value = data.institution;
+            document.getElementById('city').value = data.city;
+            document.getElementById('country').value = data.country;
+            document.getElementById('travelstart').value = formatDateToDDMMYYYY(data.travelstart); // Format date to YYYY-MM-DD
+            document.getElementById('travelend').value = formatDateToDDMMYYYY(data.travelend); // Format date to YYYY-MM-DD
+        }) 
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while loading the travel record. Please try again later.');
+        });
+}
+
 function submitUpdateTravel() {
     const travelData = {
         id: new URLSearchParams(window.location.search).get('id'), // Get the travel ID from the URL
         institution: document.getElementById('institution').value,
         city: document.getElementById('city').value,
         country: document.getElementById('country').value,
-        travelstart: document.getElementById('travelstart').value,
-        travelend: document.getElementById('travelend').value
+        travelstart: formatDateToDDMMYYYY(document.getElementById('travelstart').value),
+        travelend: formatDateToDDMMYYYY(document.getElementById('travelend').value)
     };
 
     fetch('/api/update-travel', {
@@ -129,7 +154,7 @@ function submitUpdateTravel() {
 
 function submitUpdateUser() {
     // Use the currentUserId variable passed from the server
-    const userId = currentUserId;
+    const userId = window.location.pathname.split('/').pop();
 
     const userData = {
         userid: userId, // Include the current user's ID
@@ -147,11 +172,8 @@ function submitUpdateUser() {
     })
     .then(response => {
         if (response.ok) {
-            const formContainer = document.getElementById('updateUserFormContainer');
-            formContainer.innerHTML = `
-                <p style="color: green;">User record updated successfully!</p>
-                <button onclick="window.location.href='/dashboard'" class="btn btn-primary">Back to Dashboard</button>
-            `;
+            alert('User record updated successfully!');
+            window.location.href = '/dashboard'; // Redirect to the dashboard
         } else {
             alert('Failed to update user record. Please try again.');
         }
@@ -160,4 +182,9 @@ function submitUpdateUser() {
         console.error('Error:', error);
         alert('An error occurred while updating the user record.');
     });
+}
+
+function formatDateToDDMMYYYY(dateString) {
+    const [year, month, day] = dateString.split('-');
+    return `${day}-${month}-${year}`;
 }
