@@ -26,7 +26,7 @@
                         <th>Country</th>
                         <th>Travel Start</th>
                         <th>Travel End</th>
-                        <th>Alerts</th>
+                        <th>News</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -40,14 +40,16 @@
                             <td>{{ travel['travelstart'] }}</td>
                             <td>{{ travel['travelend'] }}</td>
                             <td>
-                                {% if travel['alerts'] %}
+                                {% if travel['news'] %}
                                     <ul>
-                                        {% for alert in travel['alerts'] %}
-                                            <li>{{ alert['title'] }}</li>
+                                        {% for news in travel['news'] %}
+                                            <li>
+                                                <a href="{{ news['url'] }}" target="_blank">{{ news['title'] }}</a>
+                                            </li>
                                         {% endfor %}
                                     </ul>
                                 {% else %}
-                                    No alerts
+                                    No news available
                                 {% endif %}
                             </td>
                         </tr>
