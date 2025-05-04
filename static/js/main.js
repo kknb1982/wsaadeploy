@@ -1,8 +1,9 @@
 // Add new travel record
 function submitTravel() {
     const travelData = {
-        name: document.getElementById('name').value,
-        destination: document.getElementById('destination').value,
+        institution: document.getElementById('institution').value,
+        city: document.getElementById('city').value,
+        country: document.getElementById('country').value,
         departure_date: document.getElementById('departure_date').value,
         return_date: document.getElementById('return_date').value
     };
