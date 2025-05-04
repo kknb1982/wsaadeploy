@@ -1,10 +1,20 @@
 from flask import Flask, render_template, request, jsonify, redirect, session
-from utils.data_handler import get_travel_by_id, read_travel_data, add_travel_record, update_travel_record, get_user_info, update_user_record, get_travel_data_for_user
-from WSAA_project.utils.newsAPI_client import check_travel_alerts, fetch_news
+from utils.data_handler import get_travel_by_id, current_travel, add_travel_record, update_travel_record, get_user_info, update_user_record, get_travel_data_for_user
+from utils.newsAPI_client import fetch_news
+from utils.countries_API import get_countries
 from datetime import datetime
+
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for sessions
+
+# Run get_countries() on app load
+print("Loading countries data...")
+countries_data = get_countries()
+if countries_data:
+    print("Countries data loaded successfully.")
+else:
+    print("Failed to load countries data.")
 
 @app.route('/')
 def home():
@@ -99,11 +109,15 @@ def admin_dashboard():
     if 'userid' not in session:
         return redirect('/login')
     
-    travel_data = read_travel_data()  # Fetch all travel data
-    alerts = check_travel_alerts()  # Fetch travel alerts
-    for travel in travel_data:
-        travel['alerts'] = next((alert['articles'] for alert in alerts if alert['travelid'] == travel['travelid']), [])
-    return render_template('admin-dashboard.html', travel_data=travel_data)
+    travels = current_travel()
+    travel_data_with_news = []
+    if travels:
+        for travel in travels:
+            news = fetch_news(travel)
+            travel['news'] = news
+            travel_data_with_news.append(travel)
+    
+    return render_template('admin-dashboard.html', travel_data=travel_data_with_news)
 
 @app.route('/logout')
 def logout():
