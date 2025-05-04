@@ -1,17 +1,37 @@
 import csv
+import json
 import os
 from datetime import timedelta, datetime
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Get the directory of this script
 TRAVEL_DATA_FILE = os.path.join(BASE_DIR, '../data/travel_data.csv')  # Adjust the path to travel_plan.csv
 USERS_DATA_FILE = os.path.join(BASE_DIR, '../data/users.csv')  # Adjust the path to users.csv
+COUNTRIES_FILE = os.path.join(BASE_DIR, '../data/countries_cache.json')  # Adjust the path to countries.csv
 
+def is_valid_country(country_name):
+    COUNTRIES_FILE = os.path.join(BASE_DIR, '../data/countries_cache.json')
+    if not os.path.exists(COUNTRIES_FILE):
+        print(f"Countries file not found: {COUNTRIES_FILE}")
+        return False
+    
+    with open(COUNTRIES_FILE, 'r') as f:
+        countries_data = json.load(f)
+    
+    for country in countries_data['data']:
+        if country['name']['common'].lower() == country_name.lower():
+            return True
+    return False
+    
 def read_travel_data():
     with open(TRAVEL_DATA_FILE, mode='r', newline='', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         return list(reader)
 
 def add_travel_record(travel_info):
+    if not is_valid_country(travel_info['country']):
+        print(f"Invalid country: {travel_info['country']}")
+        return False
+    
     with open(TRAVEL_DATA_FILE, mode='a', newline='', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=travel_info.keys())
         writer.writerow(travel_info)
@@ -40,6 +60,10 @@ def get_travel_by_id(travel_id):
     return None
 
 def update_travel_record(updated_travel):
+    if not is_valid_country(updated_travel['country']):
+        print(f"Invalid country: {updated_travel['country']}")
+        return False  # Reject the operation
+    
     all_travel_data = read_travel_data()
     for travel in all_travel_data:
         if travel['id'] == updated_travel['id']:
