@@ -89,3 +89,4 @@ def current_travel():
             current_travel.append(travel)
 
     return current_travel
+
