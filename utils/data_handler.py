@@ -24,18 +24,34 @@ def is_valid_country(country_name):
     
 def read_travel_data():
     with open(TRAVEL_DATA_FILE, mode='r', newline='', encoding='utf-8') as f:
-        reader = csv.DictReader(f)
-        return list(reader)
+        travel_data = csv.DictReader(f)
+        return list(travel_data)  # Read all rows into a list and return it
 
 def add_travel_record(travel_info):
-    if not is_valid_country(travel_info['country']):
-        print(f"Invalid country: {travel_info['country']}")
+    try:
+        if not is_valid_country(travel_info['country']):
+            print(f"Invalid country: {travel_info['country']}")
+            return False
+    
+        # Read existing travel data
+        all_travel_data = read_travel_data()
+
+        # Calculate the next available travelid
+        max_travelid = max((int(travel['travelid']) for travel in all_travel_data if travel['travelid'].isdigit()), default=0)
+        travel_info['travelid'] = str(max_travelid + 1)  # Assign the next travelid as a string
+        
+        # Ensure dates are in YYYY-MM-DD format
+        travel_info['travelstart'] = datetime.strptime(travel_info['travelstart'], '%Y-%m-%d').strftime('%Y-%m-%d')
+        travel_info['travelend'] = datetime.strptime(travel_info['travelend'], '%Y-%m-%d').strftime('%Y-%m-%d')
+        
+        with open(TRAVEL_DATA_FILE, mode='a', newline='', encoding='utf-8') as f:
+            writer = csv.DictWriter(f, fieldnames=['userid', 'travelid', 'institution', 'travelstart', 'travelend', 'city','country'])
+            writer.writerow(travel_info)
+        return True
+    except Exception as e:
+        print(f"Error writing to file: {e}")
         return False
     
-    with open(TRAVEL_DATA_FILE, mode='a', newline='', encoding='utf-8') as f:
-        writer = csv.DictWriter(f, fieldnames=travel_info.keys())
-        writer.writerow(travel_info)
-        
 def read_users_data():
     with open(USERS_DATA_FILE, mode='r', newline='', encoding='utf-8') as f:
         users = csv.DictReader(f)
@@ -105,8 +121,8 @@ def current_travel():
     three_days_ago = today - timedelta(days=3)
     
     for travel in all_travel_data:
-        travel_start = datetime.strptime(travel['travelstart'].strip(), '%d/%m/%Y')
-        travel_end = datetime.strptime(travel['travelend'].strip(), '%d/%m/%Y')
+        travel_start = datetime.strptime(travel['travelstart'], '%Y-%m-%d').date()
+        travel_end = datetime.strptime(travel['travelend'], '%Y-%m-%d').date()
 
         # Check if the travel is ongoing or ended within the last three days
         if (travel_start <= today <= travel_end) or (three_days_ago <= travel_end <= today):

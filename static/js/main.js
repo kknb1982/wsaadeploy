@@ -4,8 +4,8 @@ function submitTravel() {
         institution: document.getElementById('institution').value,
         city: document.getElementById('city').value,
         country: document.getElementById('country').value,
-        departure_date: document.getElementById('departure_date').value,
-        return_date: document.getElementById('return_date').value
+        travelstart: document.getElementById('departure_date').value,
+        travelend: document.getElementById('return_date').value
     };
 
     fetch('/api/travel', {
@@ -15,11 +15,22 @@ function submitTravel() {
     })
     .then(response => response.json())
     .then(data => {
-        alert('Travel Added!');
-        window.location.href = '/view-travel';
+        const messageDiv = document.getElementById('message');
+        if (data.message) {
+            // Display success message
+            messageDiv.style.color = 'green';
+            messageDiv.textContent = 'Travel Successfully Added.';
+        } else if (data.error) {
+            // Display error message
+            messageDiv.style.color = 'red';
+            messageDiv.textContent = `Error: ${data.error}`;
+        }
     })
     .catch(error => {
-        console.error('Error:', error);
+        // Handle network or other errors
+        const messageDiv = document.getElementById('message');
+        messageDiv.style.color = 'red';
+        messageDiv.textContent = `Error: ${error.message}`;
     });
 }
 
