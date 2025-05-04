@@ -4,19 +4,23 @@ import json
 from datetime import datetime, timedelta
 
 COUNTRIES_API_URL = "https://restcountries.com/v3.1/all"
-FIELDS = "name, cca2, capital, car >side,currencies,flags,languages,maps"
-CACHE_FILE = "countries_cache.json"
+FIELDS = "name,cca2,capital,car,currencies,flags,languages,maps"
+CACHE_FILE = os.path.join(os.path.dirname(__file__), '../data/countries_cache.json')
 CACHE_EXPIRY_DAYS = 7
 
 def get_countries():
     try:
+        # Ensure the data folder exists
+        os.makedirs(os.path.dirname(CACHE_FILE), exist_ok=True)
+        
         if os.path.exists(CACHE_FILE):
+            print("Cache file found. Loading data from cache.")
             with open(CACHE_FILE, 'r') as cache_file:
                 cache_data = json.load(cache_file)
-                last_updated = datetime.strptime(cache_data['last_updated'], '%Y-%m-%d')
+                last_updated = datetime.strptime(cache_data['timestamp'], '%Y-%m-%dT%H:%M:%S')
                 if (datetime.now() - last_updated).days < CACHE_EXPIRY_DAYS:
                     print("Using cached countries data.")
-                    return cache_data
+                    return cache_data['data']
         
         # If cache is missing or expired, fetch fresh data from the API
         url = f"{COUNTRIES_API_URL}?fields={FIELDS}"

@@ -8,14 +8,6 @@ from datetime import datetime
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for sessions
 
-# Run get_countries() on app load
-print("Loading countries data...")
-countries_data = get_countries()
-if countries_data:
-    print("Countries data loaded successfully.")
-else:
-    print("Failed to load countries data.")
-
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -137,19 +129,22 @@ def get_travel():
     return jsonify(travel_data)
 
 # API to add a new travel record
-app.route('/api/travel', methods=['POST'])
-def post_travel():
+@app.route('/api/travel', methods=['POST'])
+def api_add_travel():
     if 'userid' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
 
-    travel_info = request.json
-    travel_info['id'] = session['userid']  # Pre-fill user ID from session
-    travel_info['firstname'] = session['firstname']
-    travel_info['surname'] = session['surname']
-    travel_info['role'] = session['role']
-    travel_info['institution'] = 'MyUniversity'  # Example institution
-    add_travel_record(travel_info)
-    return jsonify({'status': 'success'})
+    travel_data = request.get_json()
+    if not travel_data:
+        return jsonify({'error': 'No data provided'}), 400
+
+    # Add the travel record
+    travel_data['userid'] = session['userid']  # Add the logged-in user's ID
+    success = add_travel_record(travel_data)
+    if success:
+        return jsonify({'message': 'Travel record added successfully.'}), 200
+    else:
+        return jsonify({'error': 'Failed to add travel record.'}), 500
 
 # API to update user information
 @app.route('/api/user', methods=['POST'])
@@ -183,6 +178,12 @@ def api_update_travel():
 
 
 if __name__ == '__main__':
+    print("Loading countries data...")
+    countries_data = get_countries()
+    if countries_data:
+        print("Countries data loaded successfully.")
+    else:
+        print("Failed to load countries data.")
     app.run(debug=True)
     
 
