@@ -82,7 +82,7 @@ function loadTravel() {
                 <td>${formatDateToDDMMYYYY(travel.travelstart)}</td>
                 <td>${formatDateToDDMMYYYY(travel.travelend)}</td>
                 <td>
-                    <button class="btn btn-primary btn-sm" onclick="window.location.href='/update-travel?id=${travel.travelid}'">Update</button>
+                    <button class="btn btn-primary btn-sm" onclick="window.location.href='/update-travel/${travel.travelid}'">Update</button>
                 </td>
             `;
             tbody.appendChild(row);
@@ -100,8 +100,8 @@ function loadTravel() {
 }
 
 // Loads travel record for update
-function loadTravelForUpdate() {
-    const travelId = new URLSearchParams(window.location.search).get('id'); // Get the travel ID from the URL
+function loadTravelForUpdate(travelId) {
+    const travelId = window.location.pathname.split('/').pop();
 
     fetch(`/api/travel/${travelId}`)
         .then(response => {

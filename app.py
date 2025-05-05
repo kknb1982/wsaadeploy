@@ -24,15 +24,18 @@ def login():
             session['role'] = user_info['role']
             session['email'] = user_info['email']
             session['phone'] = user_info['phone']
-            return redirect('/dashboard')
+            return redirect(f'/dashboard/{userid}')
         else:
             return "Invalid User ID. Please try again.", 401
     return render_template('login.html')
 
 @app.route('/dashboard/<userid>')
-def dashboard():
+def dashboard(userid):
     if 'userid' not in session:
         return redirect('/login')
+    
+    print(f"Session User ID: {session['userid']}")  # Debugging log
+    print(f"Requested User ID: {userid}")  # Debugging log
     if session['userid'] != userid:
         return "Unauthorised access", 403
     return render_template('dashboard.html', user=session)
@@ -48,14 +51,14 @@ def update_user(userid):
     return render_template('update-user.html', user=user_data)
 
 @app.route('/add-travel/<userid>')
-def add_travel():
+def add_travel(userid):
     if 'userid' not in session:
         return redirect('/login')
     return render_template('add-travel.html')
 
 
-@app.route('/view-travel/<travelid>', methods=['GET'])
-def view_travel():
+@app.route('/view-travel/<userid>', methods=['GET'])
+def view_travel(userid):
     if 'userid' not in session:
         return redirect('/login')
         # Pass the user data from the session to the template
@@ -66,12 +69,12 @@ def view_travel():
     return render_template('view-travel.html', user=user)
     
 @app.route('/update-travel/<travelid>', methods = ['GET'])
-def update_travel():
+def update_travel(travelid):
     if 'userid' not in session:
         return redirect('/login')  # Redirect to login if the user is not logged in
 
-    travel_id = request.args.get('id')  # Get the travel ID from the query parameter
-    travel_data = get_travel_by_id(travel_id)  # Fetch the travel details by ID
+    # Fetch the travel details by ID
+    travel_data = get_travel_by_id(travelid)  # Use the travelid directly from the URL
 
     if not travel_data:
         return "Travel record not found.", 404
@@ -80,7 +83,7 @@ def update_travel():
     return render_template('update-travel.html', travel=travel_data)
     
 @app.route('/personal-report/<userid>', methods=['GET'])
-def report():
+def report(userid):
     if 'userid' not in session:
         return redirect('/login')
     user = {       
@@ -98,7 +101,7 @@ def report():
     return render_template('personal-report.html', user=user, travel_data=travel_data)
 
 @app.route('/admin-dashboard/<userid>', methods=['GET'])
-def admin_dashboard():
+def admin_dashboard(userid):
     if 'userid' not in session:
         return redirect('/login')
     
