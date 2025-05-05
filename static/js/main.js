@@ -346,4 +346,33 @@ function loadCountryList() {
             countryList.innerHTML = '<tr><td colspan="4">An error occurred while loading the country list. Please try again later.</td></tr>';
         });
 }
-      
+
+function loginAsAdmin() {
+    const userid = document.getElementById('userid').value;
+
+    if (!userid) {
+        alert('Please enter your User ID before logging in as an administrator.');
+        return;
+    }
+
+    fetch(`/api/check-admin/${userid}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.isAdmin) {
+                // Redirect to the admin dashboard
+                window.location.href = `/admin-dashboard/${userid}`;
+            } else {
+                alert('You do not have administrator privileges.');
+            }
+        })
+        .catch(error => {
+            console.error('Error checking admin status:', error);
+            alert('An error occurred while checking admin status. Please try again.');
+        });
+}
+

@@ -100,6 +100,22 @@ def report(userid):
         travel['alerts'] = next((alert['articles'] for alert in alerts if alert['travelid'] == travel['travelid']), [])
     return render_template('personal-report.html', user=user, travel_data=travel_data)
 
+@app.route('/admin-dashboard/<userid>', methods=['GET'])
+def admin_dashboard(userid):
+    if 'userid' not in session:
+        return redirect('/login')
+    
+    if session['role'] != 'admin':
+        return "Unauthorized access", 403
+    
+    user = {       
+        'userid': session['userid'],
+        'firstname': session['firstname'],
+        'surname': session['surname']}
+    
+    return render_template('admin-dashboard.html', user=user)
+
+
 @app.route('/current_travel/<userid>', methods=['GET'])
 def current_travel_admin(userid):
     if 'userid' not in session:
@@ -194,6 +210,14 @@ def api_update_user():
     update_user_record(user_data)
     return jsonify({'message': 'User record updated successfully.'}), 200
 
+@app.route('/api/check-admin/<userid>', methods=['GET'])
+def check_admin(userid):
+    user_info = get_user_info(userid)  # Fetch user info from the data source
+    if not user_info:
+        return jsonify({'error': 'User not found'}), 404
+
+    is_admin = user_info.get('role') == 'admin'
+    return jsonify({'isAdmin': is_admin})
 @app.route('/api/update-travel', methods=['POST'])
 def api_update_travel():
     if 'userid' not in session:
