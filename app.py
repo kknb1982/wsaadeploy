@@ -162,14 +162,18 @@ def logout():
 
 # API to get all travel records
 @app.route('/api/travel', methods=['GET'])
-def get_travel():
+def get_travel(userid):
     if 'userid' not in session:
-        return jsonify([])
+        return jsonify({'error': 'Unauthorized'}), 401
 
-    userid = session['userid']
+    # Ensure the userid in the session matches the requested userid
+    if session['userid'] != userid:
+        return jsonify({'error': 'Unauthorized access'}), 403
+
     travel_data = get_travel_data_for_user(userid)
-    print("User ID:", userid)
-    print("Travel Data:", travel_data)
+    if not travel_data:
+        return jsonify({'error': 'No travel records found'}), 404
+
     return jsonify(travel_data)
 
 # API to add a new travel record
