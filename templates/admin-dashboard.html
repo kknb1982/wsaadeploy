@@ -2,11 +2,12 @@
     <head>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
         <link href="/static/css/style.css" rel="stylesheet">
-        <title>Admin Dashboard</title>
+        <title>Incident news for current travel</title>
         <script src="/static/js/main.js" defer></script>
     </head>
 
-    <body>
+    <body onload="loadCurrentTravel()">
+
         {% if session['userid'] %}
             <div style="background-color: lightgray; padding: 10px;">
                 Logged in as: <strong>{{ session['userid'] }}</strong>
@@ -14,7 +15,7 @@
             </div>
         {% endif %}
 
-        <h1>All Current Travel Logged</h1><br>
+        <h1>Incident news for current travel</h1><br>
 
         <!-- Filters Section -->
         <div class="filters">
@@ -32,6 +33,7 @@
         </div>
 
         <!-- Button to Load Incident News -->
+        <br>
         <div style="margin-top: 20px;">
             <button class="button button1" onclick="loadIncidentNews()">Load Incident News</button>
         </div>

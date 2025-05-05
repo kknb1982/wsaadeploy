@@ -196,10 +196,6 @@ function formatDateToDDMMYYYY(dateString) {
     return `${day}-${month}-${year}`;
 }
 
-
-let travelData = []; // Store all travel data globally for filtering
-
-// Load current travel data
 function loadCurrentTravel() {
     fetch('/api/current-travel') // Fetch current travel data from the backend
         .then(response => {
@@ -239,37 +235,11 @@ function displayTravelData(data) {
             <td>${travel.country}</td>
             <td>${travel.travelstart}</td>
             <td>${travel.travelend}</td>
-            <td>
-                ${travel.news && travel.news.length > 0 ? `
-                    <ul>
-                        ${travel.news.map(news => `<li><a href="${news.url}" target="_blank">${news.title}</a></li>`).join('')}
-                    </ul>
-                ` : 'No incident news available'}
-            </td>
+            <td>No news loaded</td> <!-- News column initially empty -->
         `;
         travelTableBody.appendChild(row);
     });
 }
-
-// Filter travel data based on user input
-function filterTravel() {
-    const cityFilter = document.getElementById('filterCity').value.toLowerCase();
-    const countryFilter = document.getElementById('filterCountry').value.toLowerCase();
-    const startDateFilter = document.getElementById('filterStartDate').value;
-    const endDateFilter = document.getElementById('filterEndDate').value;
-
-    const filteredData = travelData.filter(travel => {
-        const matchesCity = travel.city.toLowerCase().includes(cityFilter);
-        const matchesCountry = travel.country.toLowerCase().includes(countryFilter);
-        const matchesStartDate = !startDateFilter || new Date(travel.travelstart) >= new Date(startDateFilter);
-        const matchesEndDate = !endDateFilter || new Date(travel.travelend) <= new Date(endDateFilter);
-
-        return matchesCity && matchesCountry && matchesStartDate && matchesEndDate;
-    });
-
-    displayTravelData(filteredData); // Update the table with filtered data
-}
-
 
 // Fetch incident news for current travel records
 function loadIncidentNews() {
@@ -290,10 +260,55 @@ function loadIncidentNews() {
             .then(news => {
                 // Add news to the travel record
                 travel.news = news;
-                displayTravelData(travelData); // Update the table with news
+                displayTravelDataWithNews(travelData); // Update the table with news
             })
             .catch(error => {
                 console.error(`Error fetching news for ${travel.city}, ${travel.country}:`, error);
             });
     });
+}
+
+// Display travel data with news in the table
+function displayTravelDataWithNews(data) {
+    const travelTableBody = document.getElementById('travelTableBody');
+    travelTableBody.innerHTML = ''; // Clear existing rows
+
+    data.forEach(travel => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${travel.travelid}</td>
+            <td>${travel.userid}</td>
+            <td>${travel.institution}</td>
+            <td>${travel.city}</td>
+            <td>${travel.country}</td>
+            <td>${travel.travelstart}</td>
+            <td>${travel.travelend}</td>
+            <td>
+                ${travel.news && travel.news.length > 0 ? `
+                    <ul>
+                        ${travel.news.map(news => `<li><a href="${news.url}" target="_blank">${news.title}</a></li>`).join('')}
+                    </ul>
+                ` : 'No incident news available'}
+            </td>
+        `;
+        travelTableBody.appendChild(row);
+    });
+}
+// Filter travel data based on user input
+function filterTravel() {
+    const cityFilter = document.getElementById('filterCity').value.toLowerCase();
+    const countryFilter = document.getElementById('filterCountry').value.toLowerCase();
+    const startDateFilter = document.getElementById('filterStartDate').value;
+    const endDateFilter = document.getElementById('filterEndDate').value;
+
+    const filteredData = travelData.filter(travel => {
+        const matchesCity = travel.city.toLowerCase().includes(cityFilter);
+        const matchesCountry = travel.country.toLowerCase().includes(countryFilter);
+        const matchesStartDate = !startDateFilter || new Date(travel.travelstart) >= new Date(startDateFilter);
+        const matchesEndDate = !endDateFilter || new Date(travel.travelend) <= new Date(endDateFilter);
+
+        return matchesCity && matchesCountry && matchesStartDate && matchesEndDate;
+    });
+
+    displayTravelData(filteredData); // Update the table with filtered data
 }
