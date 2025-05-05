@@ -205,6 +205,31 @@ def get_travel_by_id(travel_id):
         print(f"Error fetching travel record: {e}")
         return jsonify({'error': 'An error occurred while fetching the travel record'}), 500
 
+@app.route('/api/current-travel', methods=['GET'])
+def api_current_travel():
+    if 'userid' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    current_travel_data = current_travel()  # Use the `current_travel` function from `data_handler.py`
+    return jsonify(current_travel_data)
+
+@app.route('/api/news', methods=['GET'])
+def api_news():
+    city = request.args.get('city')
+    country = request.args.get('country')
+
+    if not city or not country:
+        return jsonify({'error': 'City and country are required'}), 400
+
+    # Fetch news using the News API client
+    from utils.newsAPI_client import fetch_news
+    news = fetch_news({'city': city, 'country': country})
+
+    if news is None:
+        return jsonify({'error': 'Failed to fetch news'}), 500
+
+    return jsonify(news)
+
 if __name__ == '__main__':
     print("Loading countries data...")
     countries_data = get_countries()

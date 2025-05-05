@@ -6,7 +6,7 @@
         <script src="/static/js/main.js" defer></script>
     </head>
 
-    <body onload="check_travel_alerts()">
+    <body>
         {% if session['userid'] %}
             <div style="background-color: lightgray; padding: 10px;">
                 Logged in as: <strong>{{ session['userid'] }}</strong>
@@ -14,9 +14,30 @@
             </div>
         {% endif %}
 
-        <h1>All Logged travel</h1><br>
+        <h1>All Current Travel Logged</h1><br>
+
+        <!-- Filters Section -->
+        <div class="filters">
+            <label for="filterCity">City:</label>
+            <input type="text" id="filterCity" placeholder="Enter city" oninput="filterTravel()">
+
+            <label for="filterCountry">Country:</label>
+            <input type="text" id="filterCountry" placeholder="Enter country" oninput="filterTravel()">
+
+            <label for="filterStartDate">Start Date:</label>
+            <input type="date" id="filterStartDate" onchange="filterTravel()">
+
+            <label for="filterEndDate">End Date:</label>
+            <input type="date" id="filterEndDate" onchange="filterTravel()">
+        </div>
+
+        <!-- Button to Load Incident News -->
+        <div style="margin-top: 20px;">
+            <button class="button button1" onclick="loadIncidentNews()">Load Incident News</button>
+        </div>
+
         <div id="travelList">
-            <table class=""table table-bordered>
+            <table class="table table-bordered">
                 <thead>
                     <tr>
                         <th>Travel ID</th>
@@ -29,35 +50,13 @@
                         <th>News</th>
                     </tr>
                 </thead>
-                <tbody>
-                    {% for travel in travel_data %}
-                        <tr id="travel_{{ travel['travel_id'] }}">
-                            <td>{{ travel['travelid'] }}</td>
-                            <td>{{ travel['userid'] }}</td>
-                            <td>{{ travel['institution'] }}</td>
-                            <td>{{ travel['city'] }}</td>
-                            <td>{{ travel['country'] }}</td>
-                            <td>{{ travel['travelstart'] }}</td>
-                            <td>{{ travel['travelend'] }}</td>
-                            <td>
-                                {% if travel['news'] %}
-                                    <ul>
-                                        {% for news in travel['news'] %}
-                                            <li>
-                                                <a href="{{ news['url'] }}" target="_blank">{{ news['title'] }}</a>
-                                            </li>
-                                        {% endfor %}
-                                    </ul>
-                                {% else %}
-                                    No news available
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endfor %}
+                <tbody id="travelTableBody">
+                    <!-- Travel data will be dynamically loaded here -->
                 </tbody>
             </table>        
         </div>
 
-        <button class="button button4" onclick="window.location.href='/dashboard/{{session['userid']}}'">Back to Dashboard</button>
+        <br>
+        <button class="button button2" onclick="window.location.href='/dashboard/{{session['userid']}}'">Back to Dashboard</button>
     </body>
 </html>

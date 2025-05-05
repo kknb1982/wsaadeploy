@@ -120,7 +120,7 @@ def update_user_record(updated_user):
 def current_travel():
     all_travel_data = read_travel_data()
     current_travel = []
-    today = datetime.now()
+    today = datetime.now().date()
     three_days_ago = today - timedelta(days=3)
     
     for travel in all_travel_data:
