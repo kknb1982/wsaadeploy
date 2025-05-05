@@ -58,9 +58,11 @@ def read_users_data():
         return list(users)
     
 def get_user_info(userid):
+    print(f"Fetching user info for userid: {userid}")  # Debugging log
     users = read_users_data()
     for user in users:
         if user['userid'] == userid:
+            print(f"User found: {user}")
             return user
     return None
 

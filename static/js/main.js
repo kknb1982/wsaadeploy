@@ -172,9 +172,12 @@ function submitUpdateUser() {
     })
     .then(response => {
         if (response.ok) {
-            alert('User record updated successfully!');
-            window.location.href = '/dashboard'; // Redirect to the dashboard
+            messageDiv.style.color = 'green';
+            messageDiv.textContent = 'User record updated successfully!';
+
         } else {
+            messageDiv.style.color = 'red';
+            messageDiv.textContent = 'Failed to update user record. Please try again.';
             alert('Failed to update user record. Please try again.');
         }
     })

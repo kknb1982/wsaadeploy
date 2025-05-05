@@ -35,8 +35,8 @@ def dashboard():
         return redirect('/login')
     return render_template('dashboard.html', user=session)
 
-@app.route('/update-user/<int:userid>')
-def update_user():
+@app.route('/update-user/<userid>')
+def update_user(userid):
     if 'userid' not in session:
         return redirect('/login')
 

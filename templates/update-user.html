@@ -24,7 +24,9 @@
                 Role <input type="text" id="role" placeholder="Role (e.g., Staff, Student)" value="{{ user['role'] }}"><br>
                 <button class="button button1" onclick="submitUpdateUser()">Submit</button>
             </form>
-        </div>
+
+        <div id="message" style="margin-top: 20px; font-weight: bold;"></div>
+        
         <button class="button button2" type="button" onclick="window.location.href='/dashboard'">Back to Dashboard</button><br><br>
         <script>
             const currentUserId = "{{ session['userid'] }}";
