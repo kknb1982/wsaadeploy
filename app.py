@@ -5,7 +5,7 @@ from utils.countries_API import get_countries
 from datetime import datetime
 
 
-app = Flask(__name__)
+app = Flask(__name__,static_folder='static', template_folder='templates')
 app.secret_key = 'your_secret_key'  # Required for sessions
 
 @app.route('/')
@@ -218,6 +218,7 @@ def check_admin(userid):
 
     is_admin = user_info.get('role') == 'admin'
     return jsonify({'isAdmin': is_admin})
+
 @app.route('/api/update-travel', methods=['POST'])
 def api_update_travel():
     if 'userid' not in session:

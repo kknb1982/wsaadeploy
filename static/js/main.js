@@ -36,7 +36,7 @@ function submitTravel() {
 
 // All travel records 
 function loadTravel() {
-    fetch('/api/travel')
+    fetch('/api/travel/${userid}')
     .then(response => {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -102,8 +102,6 @@ function loadTravel() {
 
 // Loads travel record for update
 function loadTravelForUpdate(travelId) {
-    const travelId = window.location.pathname.split('/').pop();
-
     fetch(`/api/travel/${travelId}`)
         .then(response => {
             if (!response.ok) {

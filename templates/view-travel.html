@@ -6,7 +6,7 @@
         <script src="/static/js/main.js" defer></script>
     </head>
 
-    <body onload="loadTravel()">
+    <body onload="loadTravel('{{ user['userid'] }}')">
         {% if session['userid'] %}
         <div style="background-color: lightgray; padding: 10px;">
             Logged in as: <strong>{{ session['userid'] }}</strong>
