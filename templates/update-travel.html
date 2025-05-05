@@ -25,8 +25,8 @@
                 Travel End <input type="date" id="travelend" value="{{ travel['travelend'] }}" required><br>
                 <br><button class= "button button 1" type="button" onclick="submitUpdateTravel()">Submit</button>
             </form>
-                <br><button class="button button3" type="button" onclick="window.location.href='/view-travel'">Back to Travel List</button>
-                <br><button class="button button2"type="button" onclick="window.location.href='/dashboard'">Back to Dashboard</button>
+                <br><button class="button button3" type="button" onclick="window.location.href='/view-travel/{{session['travelid']}}'">Back to Travel List</button>
+                <br><button class="button button2"type="button" onclick="window.location.href='/dashboard/{{session['userid']}}'">Back to Dashboard</button>
         
     </body> 
 </html>

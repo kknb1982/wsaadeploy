@@ -13,15 +13,15 @@
             Please make sure your contact details are kept up to date so Global Galway can contact you if an issue occurs
             <br>
 
-            <button class="button button2" onclick="window.location.href='/view-travel'">View Travel</button>
+            <button class="button button2" onclick="window.location.href='/view-travel/{{session['userid']}}'">View Travel</button>
             View your recorded travel history
             <br>
 
-            <button class="button button3" onclick="window.location.href='/add-travel'">Add Travel</button>
+            <button class="button button3" onclick="window.location.href='/add-travel/{{travel['travelid']}}'">Add Travel</button>
             Add a new travel record
             <br>
 
-            <button class="button button4" onclick="window.location.href='/personal-report'">See Reports</button>
+            <button class="button button4" onclick="window.location.href='/personal-report/{{session['userid']}}'">See Reports</button>
             View FCO reports and see alerts of disasters and events in your travel locations
             <br>
 

@@ -171,6 +171,7 @@ function submitUpdateUser() {
         body: JSON.stringify(userData)
     })
     .then(response => {
+        const messageDiv = document.getElementById('message'); 
         if (response.ok) {
             messageDiv.style.color = 'green';
             messageDiv.textContent = 'User record updated successfully!';
@@ -182,8 +183,10 @@ function submitUpdateUser() {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while updating the user record.');
+        // Handle network or other errors
+        const messageDiv = document.getElementById('message');
+        messageDiv.style.color = 'red';
+        messageDiv.textContent = `Error: ${error.message}`;
     });
 }
 

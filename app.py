@@ -29,10 +29,12 @@ def login():
             return "Invalid User ID. Please try again.", 401
     return render_template('login.html')
 
-@app.route('/dashboard')
+@app.route('/dashboard/<userid>')
 def dashboard():
     if 'userid' not in session:
         return redirect('/login')
+    if session['userid'] != userid:
+        return "Unauthorised access", 403
     return render_template('dashboard.html', user=session)
 
 @app.route('/update-user/<userid>')
@@ -45,14 +47,14 @@ def update_user(userid):
         return "User not found.", 404
     return render_template('update-user.html', user=user_data)
 
-@app.route('/add-travel')
+@app.route('/add-travel/<userid>')
 def add_travel():
     if 'userid' not in session:
         return redirect('/login')
     return render_template('add-travel.html')
 
 
-@app.route('/view-travel')
+@app.route('/view-travel/<travelid>', methods=['GET'])
 def view_travel():
     if 'userid' not in session:
         return redirect('/login')
@@ -63,7 +65,7 @@ def view_travel():
         'surname': session['surname']}
     return render_template('view-travel.html', user=user)
     
-@app.route('/update-travel')
+@app.route('/update-travel/<travelid>', methods = ['GET'])
 def update_travel():
     if 'userid' not in session:
         return redirect('/login')  # Redirect to login if the user is not logged in
@@ -77,7 +79,7 @@ def update_travel():
     travel_data['travelend'] = datetime.strptime(travel_data['travelend'], '%Y-%m-%d').strftime('%d/%m/%Y')
     return render_template('update-travel.html', travel=travel_data)
     
-@app.route('/personal-report')
+@app.route('/personal-report/<userid>', methods=['GET'])
 def report():
     if 'userid' not in session:
         return redirect('/login')
@@ -95,7 +97,7 @@ def report():
         travel['alerts'] = next((alert['articles'] for alert in alerts if alert['travelid'] == travel['travelid']), [])
     return render_template('personal-report.html', user=user, travel_data=travel_data)
 
-@app.route('/admin-dashboard')
+@app.route('/admin-dashboard/<userid>', methods=['GET'])
 def admin_dashboard():
     if 'userid' not in session:
         return redirect('/login')
