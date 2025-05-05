@@ -115,6 +115,16 @@ def admin_dashboard(userid):
     
     return render_template('admin-dashboard.html', travel_data=travel_data_with_news)
 
+@app.route('/country-details/<country>', methods=['GET'])
+def country_details(country):
+    countries_data = get_countries()
+    country_data = next((country for country in countries_data if country['name'].lower() == country.lower()), None)
+    
+    if not country_data:
+        return "Country not found.", 404
+    
+    return render_template('country-details.html', country=country_data)
+
 @app.route('/logout')
 def logout():
     session.clear()
@@ -126,9 +136,9 @@ def get_travel():
     if 'userid' not in session:
         return jsonify([])
 
-    user_id = session['userid']
-    travel_data = get_travel_data_for_user(user_id)
-    print("User ID:", user_id)
+    userid = session['userid']
+    travel_data = get_travel_data_for_user(userid)
+    print("User ID:", userid)
     print("Travel Data:", travel_data)
     return jsonify(travel_data)
 
@@ -167,7 +177,7 @@ def api_update_user():
         return jsonify({'error': 'Unauthorized'}), 403
 
     # Update the user record
-    update_user_record(user_data)  # This function should be defined in data_handler.py
+    update_user_record(user_data)
     return jsonify({'message': 'User record updated successfully.'}), 200
 
 @app.route('/api/update-travel', methods=['POST'])

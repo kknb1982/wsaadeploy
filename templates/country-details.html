@@ -1,0 +1,19 @@
+<html>
+    <head>
+        <title>Country Details</title>
+        <script src="/static/js/main.js" defer></script>
+        <link href="/static/css/style.css" rel="stylesheet">
+    </head>
+    
+    <h1>Country Details</h1>
+
+    <body>
+        <h1>Country Details</h1>
+        <h2>Country: {{ country['name'] }}</h2>
+        <p>Region: {{ country['region'] }}</p>
+        <p>Population: {{ country['population'] }}</p>
+        <p>Capital: {{ country['capital'] }}</p>
+        <p>Area: {{ country['area'] }} km²</p>
+        <button class="button button2" onclick="window.location.href='/view-travel/{{session['userid']}}'">Back to Travel List</button>
+    </body>
+</html>

@@ -108,6 +108,7 @@ def update_user_record(updated_user):
             user['email'] = updated_user.get('email', user['email'])
             user['phone'] = updated_user.get('phone', user['phone'])
             user['role'] = updated_user.get('role', user['role'])
+            print(f"Updating user record: {user}")  # Debugging log
             break
 
     # Write the updated users back to the CSV file

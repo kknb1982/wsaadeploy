@@ -78,11 +78,12 @@ function loadTravel() {
             row.innerHTML = `
                 <td>${travel.institution}</td>
                 <td>${travel.city}</td>
-                <td>${travel.country}</td>
+                <td><a href="/country-details/${travel.country}" class="btn btn-link">${travel.country}</a></td>
                 <td>${formatDateToDDMMYYYY(travel.travelstart)}</td>
                 <td>${formatDateToDDMMYYYY(travel.travelend)}</td>
                 <td>
                     <button class="btn btn-primary btn-sm" onclick="window.location.href='/update-travel/${travel.travelid}'">Update</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteTravel(${travel.travelid})">Delete</button>
                 </td>
             `;
             tbody.appendChild(row);
