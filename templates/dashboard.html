@@ -17,7 +17,7 @@
             View your recorded travel history
             <br>
 
-            <button class="button button3" onclick="window.location.href='/add-travel/{{travel['travelid']}}'">Add Travel</button>
+            <button class="button button3" onclick="window.location.href='/add-travel/{{session['userid']}}'">Add Travel</button>
             Add a new travel record
             <br>
 
@@ -28,7 +28,7 @@
         </div>
 
         <div class="mt-4">
-            <button class="button button5 onclick="window.location.href='/logout'">Logout</button>
+            <button class="button button5" onclick=window.location.href='/logout'>Logout</button>
         </div>
     </div>
 </body>
