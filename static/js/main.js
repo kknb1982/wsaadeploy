@@ -34,9 +34,9 @@ function submitTravel() {
     });
 }
 
-// All travel records 
-function loadTravel() {
-    fetch('/api/travel/${userid}')
+// All travel record for the user 
+function loadTravel(userid) {
+    fetch(`/api/travel/${userid}`)
     .then(response => {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
