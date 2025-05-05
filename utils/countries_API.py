@@ -43,5 +43,5 @@ def get_countries():
     except Exception as e:
         print(f"Exception occurred: {e}")
         return None
- 
+
 

@@ -100,8 +100,8 @@ def report(userid):
         travel['alerts'] = next((alert['articles'] for alert in alerts if alert['travelid'] == travel['travelid']), [])
     return render_template('personal-report.html', user=user, travel_data=travel_data)
 
-@app.route('/admin-dashboard/<userid>', methods=['GET'])
-def admin_dashboard(userid):
+@app.route('/current_travel/<userid>', methods=['GET'])
+def current_travel_admin(userid):
     if 'userid' not in session:
         return redirect('/login')
     
@@ -113,7 +113,21 @@ def admin_dashboard(userid):
             travel['news'] = news
             travel_data_with_news.append(travel)
     
-    return render_template('admin-dashboard.html', travel_data=travel_data_with_news)
+    return render_template('current_travel.html', travel_data=travel_data_with_news)
+
+@app.route('/country-list', methods=['GET'])
+def country_list():
+    countries_data = get_countries()
+    if not countries_data:
+        return "No countries found.", 404
+    formatted_countries = [
+        {
+            'name': country['name']['common'],
+            'code': country['cca2']
+        } for country in countries_data]
+    
+    return jsonify(formatted_countries)
+
 
 @app.route('/country-details/<country>', methods=['GET'])
 def country_details(country):

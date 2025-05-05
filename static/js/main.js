@@ -312,3 +312,38 @@ function filterTravel() {
 
     displayTravelData(filteredData); // Update the table with filtered data
 }
+
+function loadCountryList() {
+    fetch('/country-list')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            const countryList = document.getElementById('countryList');
+            countryList.innerHTML = ''; // Clear existing content
+            if (data.error) {
+                countryList.innerHTML = `<tr><td colspan="4">${data.error}</td></tr>`;
+                return;
+            }
+
+            data.forEach(country => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${country.name}</td>
+                    <td>${country.code}</td>
+                    <td><a href="/country-details/${country.name}" class="btn btn-link">View Details</a></td>
+                    <td>${country.fco_link ? `<a href="${country.fco_link}" target="_blank">FCO Link</a>` : 'N/A'}</td>
+                `;
+                countryList.appendChild(row);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading country list:', error);
+            const countryList = document.getElementById('countryList');
+            countryList.innerHTML = '<tr><td colspan="4">An error occurred while loading the country list. Please try again later.</td></tr>';
+        });
+}
+      
