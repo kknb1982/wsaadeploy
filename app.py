@@ -161,7 +161,7 @@ def logout():
     return redirect('/login')
 
 # API to get all travel records
-@app.route('/api/travel', methods=['GET'])
+@app.route('/api/travel/<userid>', methods=['GET'])
 def get_travel(userid):
     if 'userid' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
@@ -177,7 +177,7 @@ def get_travel(userid):
     return jsonify(travel_data)
 
 # API to add a new travel record
-@app.route('/api/travel', methods=['POST'])
+@app.route('/api/travel/<userid>', methods=['POST'])
 def api_add_travel():
     if 'userid' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
