@@ -70,10 +70,10 @@ def get_travel_data_for_user(userid):
     all_travel_data = read_travel_data()
     return [travel for travel in all_travel_data if travel['userid'] == userid]
 
-def get_travel_by_id(travel_id):
+def get_travel_by_id(travelid):
     all_travel_data = read_travel_data()
     for travel in all_travel_data:
-        if travel['travelid'] == travel_id:
+        if travel['travelid'] == travelid:
             return travel
     return None
 
