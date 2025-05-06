@@ -122,17 +122,17 @@ function loadTravelForUpdate(travelId) {
         });
 }
 
-function submitUpdateTravel() {
+function submitUpdateTravel(travelId) {
     const travelData = {
-        id: new URLSearchParams(window.location.search).get('id'), // Get the travel ID from the URL
+        travelid: travelId, // Use the travelId parameter directly
         institution: document.getElementById('institution').value,
         city: document.getElementById('city').value,
         country: document.getElementById('country').value,
-        travelstart: formatDateToDDMMYYYY(document.getElementById('travelstart').value),
-        travelend: formatDateToDDMMYYYY(document.getElementById('travelend').value)
+        travelstart: document.getElementById('travelstart').value, // Use the raw date value
+        travelend: document.getElementById('travelend').value // Use the raw date value
     };
 
-    fetch('/api/update-travel', {
+    fetch(`/update-travel/${travelId}`, { // Format the URL with travelId
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(travelData)
@@ -140,7 +140,7 @@ function submitUpdateTravel() {
     .then(response => {
         if (response.ok) {
             alert('Travel record updated successfully!');
-            window.location.href = '/view-travel'; // Redirect back to the travel list
+            window.location.href = '/view-travel/{{session["userid"]}}'; // Redirect back to the travel list
         } else {
             alert('Failed to update travel record. Please try again.');
         }

@@ -223,7 +223,7 @@ def check_admin(userid):
     is_admin = user_info.get('role') == 'admin'
     return jsonify({'isAdmin': is_admin})
 
-@app.route('/api/update-travel', methods=['POST'])
+@app.route('/api/update-travel/<travelid>', methods=['POST'])
 def api_update_travel():
     if 'userid' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
@@ -232,14 +232,14 @@ def api_update_travel():
     update_travel_record(travel_data)  # Update the travel record in the CSV
     return jsonify({'message': 'Travel record updated successfully.'}), 200
 
-@app.route('/api/travel/<travel_id>', methods=['GET'])
-def get_travel_by_id(travel_id):
+@app.route('/api/travel/<travelid>', methods=['GET'])
+def get_travel_by_id(travelid):
     try:
         # Read all travel data
         all_travel_data = read_travel_data()
 
         # Find the travel record with the matching ID
-        travel = next((t for t in all_travel_data if t['travelid'] == travel_id), None)
+        travel = next((t for t in all_travel_data if t['travelid'] == travelid), None)
         if travel:
             return jsonify(travel), 200
         else:
