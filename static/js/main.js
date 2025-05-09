@@ -4,8 +4,8 @@ function submitTravel() {
         institution: document.getElementById('institution').value,
         city: document.getElementById('city').value,
         country: document.getElementById('country').value,
-        travelstart: document.getElementById('departure_date').value,
-        travelend: document.getElementById('return_date').value
+        travelstart: document.getElementById('travelstart').value,
+        travelend: document.getElementById('travelend').value
     };
 
     fetch('/api/travel', {
@@ -149,6 +149,42 @@ function submitUpdateTravel(travelId) {
         console.error('Error:', error);
         alert('An error occurred while updating the travel record.');
     });
+}
+
+function deleteTravel(travelId) {
+    if (confirm('Are you sure you want to delete this travel record?')) {
+        fetch(`/api/travel/${travelId}`, {
+            method: 'DELETE'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.message) {
+                // Display success message
+                const messageDiv = document.getElementById('message');
+                messageDiv.style.color = 'green';
+                messageDiv.textContent = `The travel to ${data.institution} from ${data.travelstart} to ${data.travelend} has been deleted.`;
+
+                // Reload the travel list to reflect the deletion
+                loadTravel(data.userid);
+            } else if (data.error) {
+                // Display error message
+                const messageDiv = document.getElementById('message');
+                messageDiv.style.color = 'red';
+                messageDiv.textContent = `Error: ${data.error}`;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            const messageDiv = document.getElementById('message');
+            messageDiv.style.color = 'red';
+            messageDiv.textContent = `Error: ${error.message}`;
+        });
+    }
 }
 
 function submitUpdateUser() {
