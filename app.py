@@ -135,16 +135,8 @@ def current_travel_admin(userid):
 @app.route('/country-list', methods=['GET'])
 def country_list():
     countries_data = get_countries()
-    if not countries_data:
-        return "No countries found.", 404
-    formatted_countries = [
-        {
-            'name': country['name']['common'],
-            'code': country['cca2']
-        } for country in countries_data]
-    
-    return jsonify(formatted_countries)
-
+    countries_data = sorted(countries_data, key=lambda x: x['name']['common'].lower())
+    return render_template('country-list.html', countries=countries_data)
 
 @app.route('/country-details/<country>', methods=['GET'])
 def country_details(country):
@@ -290,6 +282,12 @@ def api_current_travel():
 
     current_travel_data = current_travel()  # Use the `current_travel` function from `data_handler.py`
     return jsonify(current_travel_data)
+
+@app.route('/api/countries', methods=['GET'])
+def api_countries():
+    countries_data = get_countries()
+    countries_data = sorted(countries_data, key=lambda x: x['name']['common'].lower())
+    return jsonify(countries_data)
 
 @app.route('/api/news', methods=['GET'])
 def api_news():

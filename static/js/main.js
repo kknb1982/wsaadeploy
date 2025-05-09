@@ -275,6 +275,23 @@ function displayTravelData(data) {
     });
 }
 
+function filterCountries() {
+    const input = document.getElementById('searchBox').value.toLowerCase();
+    const rows = document.querySelectorAll('#countryTable tbody tr'); // Only target rows in <tbody>
+
+    rows.forEach(row => {
+        const countryNameCell = row.querySelector('td'); // Get the first <td> in the row
+        if (countryNameCell) { // Ensure the <td> exists
+            const countryName = countryNameCell.textContent.toLowerCase();
+            if (countryName.includes(input)) {
+                row.style.display = ''; // Show the row if it matches the filter
+            } else {
+                row.style.display = 'none'; // Hide the row if it doesn't match
+            }
+        }
+    });
+}
+
 // Fetch incident news for current travel records
 function loadIncidentNews() {
     if (travelData.length === 0) {
@@ -348,38 +365,36 @@ function filterTravel() {
 }
 
 function loadCountryList() {
-    fetch('/country-list')
+    fetch('/api/countries') // Fetch data from the new API endpoint
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            return response.json();
+            return response.json(); // Parse the JSON response
         })
         .then(data => {
-            const countryList = document.getElementById('countryList');
-            countryList.innerHTML = ''; // Clear existing content
-            if (data.error) {
-                countryList.innerHTML = `<tr><td colspan="4">${data.error}</td></tr>`;
-                return;
-            }
+            const countryTableBody = document.querySelector('#countryTable tbody');
+            countryTableBody.innerHTML = ''; // Clear existing content
 
             data.forEach(country => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${country.name}</td>
-                    <td>${country.code}</td>
-                    <td><a href="/country-details/${country.name}" class="btn btn-link">View Details</a></td>
-                    <td>${country.fco_link ? `<a href="${country.fco_link}" target="_blank">FCO Link</a>` : 'N/A'}</td>
+                    <td>${country.name.common}</td>
+                    <td>
+                        <a href="/country-details/${country.name.common.toLowerCase().replace(/ /g, '-')}" class="btn btn-link">
+                            View Details
+                        </a>
+                    </td>
                 `;
-                countryList.appendChild(row);
+                countryTableBody.appendChild(row);
             });
         })
         .catch(error => {
             console.error('Error loading country list:', error);
-            const countryList = document.getElementById('countryList');
-            countryList.innerHTML = '<tr><td colspan="4">An error occurred while loading the country list. Please try again later.</td></tr>';
+            const countryTableBody = document.querySelector('#countryTable tbody');
+            countryTableBody.innerHTML = '<tr><td colspan="2">An error occurred while loading the country list. Please try again later.</td></tr>';
         });
-}
+}""
 
 function loginAsAdmin() {
     const userid = document.getElementById('userid').value;

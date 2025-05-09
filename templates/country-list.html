@@ -9,19 +9,27 @@
     <body onload="loadCountryList()">
         <h1>List of all countries data is available for</h1>
         <p>Click on a country to view its details and travel advice.</p>
-
+        
         <div class="container mt-4">
-            <table class="table table-striped">
+            <input type=""text" id="searchBox" placeholder="Search for a country....." onkeyup="filterCountries()">
+            <table id = "countryTable" class="table table-striped">
                 <thead>
                     <tr>
                         <th>Country Name</th>
-                        <th>Country Code</th>
-                        <th>Country Details</th>
-                        <th>FCO link</th>
+                        <th>Country Details Page</th>
                     </tr>
                 </thead>
-                <tbody id="countryList">
-                    <!-- The country list will be dynamically loaded here by JavaScript -->
+                <tbody>
+                    {% for country in countries %}
+                    <tr>
+                        <td>{{ country['name']['common'] }}</td>
+                        <td>
+                            <a href="/country-details/{{ country['name']['common'] | lower | replace(' ', '-') }}">
+                                View Details
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>  
