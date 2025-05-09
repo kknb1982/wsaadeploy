@@ -413,8 +413,22 @@ function loginAsAdmin() {
         })
         .then(data => {
             if (data.isAdmin) {
-                // Redirect to the admin dashboard
-                window.location.href = `/admin-dashboard/${userid}`;
+                // Set the session for the admin user
+                fetch(`/api/admin-login/${userid}`, { method: 'POST' })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(() => {
+                        // Redirect to the admin dashboard
+                        window.location.href = `/admin-dashboard/${userid}`;
+                    })
+                    .catch(error => {
+                        console.error('Error during admin login:', error);
+                        alert('An error occurred while logging in as an administrator. Please try again.');
+                    });
             } else {
                 alert('You do not have administrator privileges.');
             }

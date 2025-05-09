@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify, redirect, session
+from flask_session import Session
 from utils.data_handler import read_travel_data, get_travel_by_id, current_travel, add_travel_record, update_travel_record, delete_travel_record, get_user_info, update_user_record, get_travel_data_for_user
 from utils.newsAPI_client import fetch_news
 from utils.countries_API import get_countries
@@ -7,6 +8,8 @@ from datetime import datetime
 
 app = Flask(__name__,static_folder='static', template_folder='templates')
 app.secret_key = 'your_secret_key'  # Required for sessions
+app.config['SESSION_TYPE'] = 'filesystem'  # Store sessions on the filesystem
+Session(app)
 
 @app.route('/')
 def home():
@@ -104,11 +107,14 @@ def report(userid):
 @app.route('/admin-dashboard/<userid>', methods=['GET'])
 def admin_dashboard(userid):
     if 'userid' not in session:
+        print("Session is missing. Redirecting to login.")
         return redirect('/login')
     
     if session['role'] != 'admin':
+        print(f"Unauthorized access attempt by user {session['userid']} with role {session['role']}")
         return "Unauthorized access", 403
     
+    print(f"Admin dashboard accessed by {session['userid']}")
     user = {       
         'userid': session['userid'],
         'firstname': session['firstname'],
@@ -162,6 +168,11 @@ def country_details(country):
 
     return render_template('country-details.html', country=country_details)
 
+@app.route('/current-travel', methods=['GET'])
+def current_travel():
+    # Fetch all current travel records
+    travel_records = current_travel()  # Assuming this function exists in your `data_handler` module
+    return render_template('current-travel.html', travel_records=travel_records)
 
 @app.route('/logout')
 def logout():
@@ -249,6 +260,26 @@ def check_admin(userid):
 
     is_admin = user_info.get('role') == 'admin'
     return jsonify({'isAdmin': is_admin})
+
+
+@app.route('/api/admin-login/<userid>', methods=['POST'])
+def admin_login(userid):
+    user_info = get_user_info(userid)  # Fetch user info from the data source
+    if not user_info:
+        return jsonify({'error': 'User not found'}), 404
+
+    if user_info.get('role') != 'admin':
+        return jsonify({'error': 'Unauthorized'}), 403
+
+    # Set the session for the admin user
+    session['userid'] = user_info['userid']
+    session['firstname'] = user_info['firstname']
+    session['surname'] = user_info['surname']
+    session['role'] = user_info['role']
+    session['email'] = user_info['email']
+    session['phone'] = user_info['phone']
+
+    return jsonify({'message': 'Admin login successful'}), 200
 
 @app.route('/api/update-travel/<travelid>', methods=['POST'])
 def api_update_travel():
