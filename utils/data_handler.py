@@ -45,13 +45,41 @@ def add_travel_record(travel_info):
         travel_info['travelend'] = datetime.strptime(travel_info['travelend'], '%Y-%m-%d').strftime('%Y-%m-%d')
         
         with open(TRAVEL_DATA_FILE, mode='a', newline='', encoding='utf-8') as f:
-            writer = csv.DictWriter(f, fieldnames=['userid', 'travelid', 'institution', 'travelstart', 'travelend', 'city','country'])
+            writer = csv.DictWriter(f, fieldnames=['userid', 'travelid', 'institution', 'travelstart', 'travelend', 'country','city'])
             writer.writerow(travel_info)
         return True
     except Exception as e:
         print(f"Error writing to file: {e}")
         return False
     
+def delete_travel_record(travelid):
+    try:
+        # Read all travel data
+        all_travel_data = read_travel_data()
+
+        # Find the travel record to delete
+        travel_to_delete = None
+        updated_travel_data = []
+        for travel in all_travel_data:
+            if travel['travelid'] == travelid:
+                travel_to_delete = travel
+            else:
+                updated_travel_data.append(travel)
+
+        if not travel_to_delete:
+            return None  # Return None if the travel record is not found
+
+        # Write the updated travel data back to the CSV file
+        with open(TRAVEL_DATA_FILE, mode='w', newline='', encoding='utf-8') as f:
+            writer = csv.DictWriter(f, fieldnames=['userid', 'travelid', 'institution', 'travelstart', 'travelend', 'country', 'city'])
+            writer.writeheader()
+            writer.writerows(updated_travel_data)
+
+        return travel_to_delete  # Return the deleted travel record
+    except Exception as e:
+        print(f"Error deleting travel record: {e}")
+        return None
+        
 def read_users_data():
     with open(USERS_DATA_FILE, mode='r', newline='', encoding='utf-8') as f:
         users = csv.DictReader(f)

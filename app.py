@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify, redirect, session
-from utils.data_handler import read_travel_data, get_travel_by_id, current_travel, add_travel_record, update_travel_record, get_user_info, update_user_record, get_travel_data_for_user
+from utils.data_handler import read_travel_data, get_travel_by_id, current_travel, add_travel_record, update_travel_record, delete_travel_record, get_user_info, update_user_record, get_travel_data_for_user
 from utils.newsAPI_client import fetch_news
 from utils.countries_API import get_countries
 from datetime import datetime
@@ -10,6 +10,7 @@ app.secret_key = 'your_secret_key'  # Required for sessions
 
 @app.route('/')
 def home():
+    session.clear()  # Clear session on home page load
     return render_template('home.html')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -148,12 +149,27 @@ def country_list():
 @app.route('/country-details/<country>', methods=['GET'])
 def country_details(country):
     countries_data = get_countries()
-    country_data = next((country for country in countries_data if country['name'].lower() == country.lower()), None)
     
+    country_data = next(
+        (c for c in countries_data if c['name']['common'].lower() == country.lower()), 
+        None
+    )
+
     if not country_data:
         return "Country not found.", 404
     
-    return render_template('country-details.html', country=country_data)
+    country_details = {
+        'name': country_data['name']['common'],
+        'capital': country_data['capital'][0] if 'capital' in country_data else 'N/A',
+        'population': country_data['population'] if 'population' in country_data else 'N/A',
+        'flag': country_data['flags']['png'] if 'flags' in country_data else None,
+        'languages': ', '.join(country_data['languages'].values()) if 'languages' in country_data else 'N/A',
+        'currencies': ', '.join(country_data['currencies'].keys()) if 'currencies' in country_data else 'N/A',
+        'maps': country_data['maps']['googleMaps'] if 'maps' in country_data else None
+    }
+
+    return render_template('country-details.html', country=country_details)
+
 
 @app.route('/logout')
 def logout():
@@ -177,7 +193,7 @@ def get_travel(userid):
     return jsonify(travel_data)
 
 # API to add a new travel record
-@app.route('/api/travel/<userid>', methods=['POST'])
+@app.route('/api/travel', methods=['POST'])
 def api_add_travel():
     if 'userid' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
@@ -193,6 +209,25 @@ def api_add_travel():
         return jsonify({'message': 'Travel record added successfully.'}), 200
     else:
         return jsonify({'error': 'Failed to add travel record.'}), 500
+    
+@app.route('/api/travel/<travelid>', methods=['DELETE'])
+def delete_travel(travelid):
+    if 'userid' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    # Call the delete_travel_record function
+    deleted_travel = delete_travel_record(travelid)
+
+    if not deleted_travel:
+        return jsonify({'error': 'Travel record not found or could not be deleted'}), 404
+
+    return jsonify({
+        'message': 'Travel record deleted successfully',
+        'institution': deleted_travel['institution'],
+        'travelstart': deleted_travel['travelstart'],
+        'travelend': deleted_travel['travelend'],
+        'userid': deleted_travel['userid']
+    }), 200
 
 # API to update user information
 @app.route('/api/user', methods=['POST'])
