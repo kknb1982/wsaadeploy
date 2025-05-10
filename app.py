@@ -80,7 +80,8 @@ def update_travel(travelid):
         return redirect('/login')  # Redirect to login if the user is not logged in
 
     # Fetch the travel details by ID
-    travel_data = get_travel_by_id(travelid)  # Use the travelid directly from the URL
+    travel_data = get_travel_by_id(travelid)  # Assuming this function exists in your `data_handler` module
+    print(f"Travel data fetched for ID {travelid}: {travel_data}")  # Debugging log # Use the travelid directly from the URL
 
     if not isinstance(travel_data, dict):
         return "Invalid travel data format.", 500
