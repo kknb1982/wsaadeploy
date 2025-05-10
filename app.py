@@ -174,6 +174,15 @@ def view_current_travel():
     travel_records = current_travel()  # Assuming this function exists in your `data_handler` module
     return render_template('current-travel.html', travel_records=travel_records)
 
+@app.route('/news-search', methods=['GET'])
+def news_search():
+    keyword = request.args.get('keyword', '')
+    search_in = request.args.get('searchIn', 'title')
+    
+    # Fetch news using the News API client
+    news = fetch_news(keyword=keyword, search_in=search_in)
+    return render_template('news-search.html', news=news)
+
 @app.route('/logout')
 def logout():
     session.clear()
@@ -329,16 +338,15 @@ def api_countries():
 
 @app.route('/api/news', methods=['GET'])
 def api_news():
-    keywords = request.args.get('keywords', '')
-    search_in = request.args.get('searchIn', 'title')
-
-    # Example current travel data (replace with actual data)
-    current_travel_data = current_travel()
-    if not current_travel_data:
-        return jsonify({'error': 'No current travel data found'}), 404
+    keyword = request.args.get('keyword', '')
+    search_in = request.args.get('searchIn', 'title,description,content')
+    date_from = request.args.get('from', None)
+    date_to = request.args.get('to', None)
 
     # Fetch news using the News API client
-    news = fetch_news(current_travel_data, keywords=keywords, search_in=search_in)
+    news = fetch_news(keyword=keyword, search_in=search_in, date_from=date_from, date_to=date_to)
+    if not news:
+        return jsonify({'error': 'No news found'}), 404
     return jsonify(news)
 
 @app.route('/api/download-names', methods=['GET'])

@@ -1,0 +1,54 @@
+<html>
+    <head>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+        <link href="/static/css/style.css" rel="stylesheet">
+        <title>Search News</title>
+        <script src="/static/js/main.js" defer></script>
+    </head>
+
+    <body onload="setDefaultDates()">
+        <div class="container mt-4">
+            <h1>Search News</h1>
+            <p>Use the form below to search for news articles using keywords, dates, and search fields.</p>
+
+            <div class="filters">
+                <h2>Filters</h2>
+                <p>Surround phrases with quotes (") for exact match. 
+                    If a word or phrase must appear in the results, prepend it with a + symbol.
+                    If a word or phrase must not appear, prepend it with a - symbol.
+                    For example: "travel warning" +safety -advice.
+Alternatively you can use the AND / OR / NOT keywords, and optionally group these with parenthesis. Eg: crypto AND (ethereum OR litecoin) NOT bitcoin.</p>
+                <form id="newsSearchForm">
+                    <div class="mb-3">
+                        <label for="filterKeyword" class="form-label">Keyword:</label>
+                        <input type="text" id="filterKeyword" class="form-control" placeholder="Enter keywords">
+                    </div>
+                    <div class="mb-3">
+                        <label for="filterFromDate" class="form-label">From Date:</label>
+                        <input type="date" id="filterFromDate" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label for="filterToDate" class="form-label">To Date:</label>
+                        <input type="date" id="filterToDate" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label for="searchIn" class="form-label">Search in:</label>
+                        <select id="searchIn" class="form-select">
+                            <option value="title">Title</option>
+                            <option value="description">Description</option>
+                            <option value="content">Content</option>
+                            <option value="title,description">Title and Description</option>
+                            <option value="title,description,content">All Fields</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="searchNews()">Search News</button>
+                </form>
+            </div>
+
+            <div id="newsResults" class="mt-4">
+                <h2>Results</h2>
+                <p>No results yet. Use the form above to search for news.</p>
+            </div>
+        </div>
+    </body>
+</html>

@@ -12,40 +12,31 @@ NEWS_API_KEY = config.get('NEWS_API_KEY')
 if not NEWS_API_KEY:
     raise ValueError("NEWS_API_KEY not found in config.json")
 
-NEWS_API_URL = "https://newsapi.org/v2/top-headlines"
+NEWS_API_URL = "https://newsapi.org/v2/everything"
 
-def fetch_news(current_travel, keywords='', search_in='title,description,content'):
-    
-    news_results = []
-    
-    # Construct the query parameters
-    for travel in current_travel:
-        city = travel.get('city', '')
-        country = travel.get('country', '')
-        today = datetime.now()
-        three_days_ago = today - timedelta(days=3)
-        today = today.strftime('%Y-%m-%d')
-        three_days_ago = three_days_ago.strftime('%Y-%m-%d')
-
+def fetch_news(keyword='', search_in='title,description,content', date_from=None, date_to=None):
+    if not keyword:
+        keyword = 'news'  # Default keyword if none is provided
+    if not date_from:
+        date_from = (datetime.now() - timedelta(days=3)).strftime('%Y-%m-%d')
+    if not date_to:
+        date_to = datetime.now().strftime('%Y-%m-%d')
+        
     parameters = {
-        'q': f"{keywords} {city} {country}".strip(),
+        'q': keyword.strip(),
         'searchIn': search_in,
-        'from': three_days_ago,
-        'to': today,
+        'from': date_from,
+        'to': date_to,
         'language': 'en',
         'apiKey': NEWS_API_KEY
     }
-    
     # Make the API request
     response = requests.get(NEWS_API_URL, params=parameters)
     if response.status_code == 200:
         data = response.json()
-        articles = [{"title": article['title'], "url": article['url']} for article in data.get('articles', [])]
-        news_results.append({'travel': travel, 'articles': articles})
+        return [{"title": article['title'], "description": article.get('description', ''), "url": article['url']} for article in data.get('articles', [])]
     else:
-        print(f"Error fetching news for {city}, {country}: {response.status_code}, {response.text}")
-        news_results.append({'travel': travel, 'articles': []})
-
-    return news_results
+        print(f"Error fetching news: {response.status_code}, {response.text}")
+        return []
 
 

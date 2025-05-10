@@ -268,9 +268,9 @@ function displayTravelData(data) {
             <td>${travel.institution}</td>
             <td>${travel.city}</td>
             <td>${travel.country}</td>
-            <td>${travel.travelstart}</td>
-            <td>${travel.travelend}</td>
-            <td>No news loaded</td> 
+            <td>${formatDateToDDMMYYYY(travel.travelstart)}</td>
+            <td>${formatDateToDDMMYYYY(travel.travelend)}</td>
+
         `;
         travelTableBody.appendChild(row);
     });
@@ -292,63 +292,72 @@ function filterCountries() {
         }
     });
 }
+function setDefaultDates() {
+    const today = new Date();
+    const threeDaysAgo = new Date(today);
+    threeDaysAgo.setDate(today.getDate() - 3);
+    const formattedToday = today.toISOString().split('T')[0];
+    const formattedThreeDaysAgo = threeDaysAgo.toISOString().split('T')[0];
 
+    fromDateInput.value = formattedFromDate;
+    toDateInput.value = formattedToDate; 
+}
+    
 // Fetch incident news for current travel records
-function loadIncidentNews() {
-    console.log('Travel data:', travelData); // Log the travel data for debugging
+function searchNews() {
     // Get user-provided search criteria
-    const userKeyword = document.getElementById('filterKeyword').value.trim();
-    const userSearchIn = document.getElementById('searchIn').value;
+    const keyword = document.getElementById('filterKeyword').value.trim();
+    let fromDate = document.getElementById('filterFromDate').value;
+    let toDate = document.getElementById('filterToDate').value;
+    const searchIn = document.getElementById('searchIn').value;
 
-    // Fetch news for each travel record
-    travelData.forEach(travel => {
-        const travelId = travel.travelid;
-        const country = travel.country;
-
-        console.log(`Fetching news for travel ID: ${travelId}, Country: ${country}`); // Log the travel ID and country
-        // Use the country as the default keyword if no user keyword is provided
-        const keywords = userKeyword || country;
-
-        // Use "title" as the default search field if no user selection is made
-        const searchIn = userSearchIn || 'title';
-
-        // Fetch news for the current travel record
-        fetch(`/api/news?keywords=${encodeURIComponent(keywords)}&searchIn=${encodeURIComponent(searchIn)}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(newsData => {
-                // Find the corresponding row in the table
-                const row = document.querySelector(`#travelTableBody tr[data-travel-id="${travelId}"]`);
-                if (!row) {
-                    console.error(`Row with travel ID ${travelId} not found.`);
-                    return;
-                }
-
-                const newsCell = row.querySelector('.news-cell');
-                if (!newsCell) {
-                    console.error(`News cell for travel ID ${travelId} not found.`);
-                    return;
-                }
-
-                // Populate the "News" column with the fetched news
-                if (newsData.length === 0) {
-                    newsCell.innerHTML = 'No news found for this search.';
-                } else {
-                    const newsList = newsData.map(article => `<a href="${article.url}" target="_blank">${article.title}</a>`).join('<br>');
-                    newsCell.innerHTML = newsList;
-                }
-            })
-            .catch(error => {
-                console.error(`Error fetching news for travel ID ${travelId}:`, error);
-                const row = document.querySelector(`#travelTableBody tr[data-travel-id="${travelId}"]`);
-                const newsCell = row.querySelector('.news-cell');
-                newsCell.innerHTML = 'Error loading news.';
-            });
+    if (fromDate) {
+        fromDate = formatDateToYYYYMMDD(fromDate); // Format date to YYYY-MM-DD
+    }
+    if (toDate) {   
+        toDate = formatDateToYYYYMMDD(toDate); // Format date to YYYY-MM-DD
+    }
+    const params = new URLSearchParams({
+        keyword: keyword || 'news',
+        from: fromDate,
+        to: toDate,
+        searchIn: searchIn
     });
+
+    fetch(`/api/news?${params.toString()}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(newsData => {
+            const newsResults = document.getElementById('newsResults');
+            if (newsData.length === 0) {
+                newsResults.innerHTML = '<p>No news articles found for the given criteria.</p>';
+            } else {
+                const articles = newsData.map(article => `
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">${article.title}</h5>
+                            <p class="card-text">${article.description || 'No description available.'}</p>
+                            <a href="${article.url}" target="_blank" class="btn btn-primary">Read More</a>
+                        </div>
+                    </div>
+                `).join('');
+                newsResults.innerHTML = articles;
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching news:', error);
+            const newsResults = document.getElementById('newsResults');
+            newsResults.innerHTML = '<p>An error occurred while fetching news. Please try again later.</p>';
+        });
+}
+
+function formatDateToYYYYMMDD(dateString) {
+    const [day, month, year] = dateString.split('-');
+    return `${year}-${month}-${day}`; // Format to YYYY-MM-DD
 }
 
 function filterTravel() {
