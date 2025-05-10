@@ -239,6 +239,7 @@ function loadCurrentTravel() {
             return response.json();
         })
         .then(data => {
+            console.log('Current travel data:', data); // Log the data for debugging
             travelData = data; // Store the data globally
             displayTravelData(travelData); // Display the data in the table
         })
@@ -269,7 +270,7 @@ function displayTravelData(data) {
             <td>${travel.country}</td>
             <td>${travel.travelstart}</td>
             <td>${travel.travelend}</td>
-            <td>No news loaded</td> <!-- News column initially empty -->
+            <td>No news loaded</td> 
         `;
         travelTableBody.appendChild(row);
     });
@@ -294,6 +295,7 @@ function filterCountries() {
 
 // Fetch incident news for current travel records
 function loadIncidentNews() {
+    console.log('Travel data:', travelData); // Log the travel data for debugging
     // Get user-provided search criteria
     const userKeyword = document.getElementById('filterKeyword').value.trim();
     const userSearchIn = document.getElementById('searchIn').value;
@@ -303,6 +305,7 @@ function loadIncidentNews() {
         const travelId = travel.travelid;
         const country = travel.country;
 
+        console.log(`Fetching news for travel ID: ${travelId}, Country: ${country}`); // Log the travel ID and country
         // Use the country as the default keyword if no user keyword is provided
         const keywords = userKeyword || country;
 
@@ -320,7 +323,16 @@ function loadIncidentNews() {
             .then(newsData => {
                 // Find the corresponding row in the table
                 const row = document.querySelector(`#travelTableBody tr[data-travel-id="${travelId}"]`);
+                if (!row) {
+                    console.error(`Row with travel ID ${travelId} not found.`);
+                    return;
+                }
+
                 const newsCell = row.querySelector('.news-cell');
+                if (!newsCell) {
+                    console.error(`News cell for travel ID ${travelId} not found.`);
+                    return;
+                }
 
                 // Populate the "News" column with the fetched news
                 if (newsData.length === 0) {

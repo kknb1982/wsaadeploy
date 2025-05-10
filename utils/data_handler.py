@@ -158,6 +158,6 @@ def current_travel():
         # Check if the travel is ongoing or ended within the last three days
         if (travel_start <= today <= travel_end) or (three_days_ago <= travel_end <= today):
             current_travel.append(travel)
-
+    print(f"Current travel records: {current_travel}")  # Debugging log
     return current_travel
 

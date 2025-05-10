@@ -310,8 +310,15 @@ def get_travel_by_id(travelid):
 def api_current_travel():
     if 'userid' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
+    if session['role'] != 'admin':
+        return jsonify({'error': 'Unauthorized access'}), 403
 
     current_travel_data = current_travel()  # Use the `current_travel` function from `data_handler.py`
+    
+    for record in current_travel_data:
+        if 'travelid' not in record:
+            print(f"Missing travelid in record: {record}")  # Debugging log
+
     return jsonify(current_travel_data)
 
 @app.route('/api/countries', methods=['GET'])
