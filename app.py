@@ -19,15 +19,17 @@ def home():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        userid = request.form.get('userid')
-        user_info = get_user_info(userid)
+        userid = request.form.get('userid')  # Get the userid from the form
+        user_info = get_user_info(userid)  # Fetch user info from the database or data source
         if user_info:
+            # Store user details in the session
             session['userid'] = userid
             session['firstname'] = user_info['firstname']
             session['surname'] = user_info['surname']
             session['role'] = user_info['role']
             session['email'] = user_info['email']
             session['phone'] = user_info['phone']
+            # Redirect to the dashboard with the userid
             return redirect(f'/dashboard/{userid}')
         else:
             return "Invalid User ID. Please try again.", 401
