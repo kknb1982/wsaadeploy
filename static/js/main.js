@@ -36,73 +36,77 @@ function submitTravel() {
 
 // All travel record for the user 
 function loadTravel(userid) {
+    console.log(`Fetching travel records for user ID: ${userid}`); // Debug log
+
     fetch(`/api/travel/${userid}`)
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        const travelList = document.getElementById('travelList');
-        travelList.innerHTML = ''; // Clear any existing content
+        .then(response => {
+            console.log(`Response status: ${response.status}`); // Debug log
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Travel data:', data); // Debug log
+            const travelList = document.getElementById('travelList');
+            travelList.innerHTML = ''; // Clear any existing content
 
-        if (data.length === 0) {
-            travelList.innerHTML = '<p>No travel records found.</p>';
-            return;
-        }
+            if (data.length === 0) {
+                travelList.innerHTML = '<p>No travel records found.</p>';
+                return;
+            }
 
-        // Create a table element
-        const table = document.createElement('table');
-        table.setAttribute('border', '1'); 
-        table.style.width = '100%'; 
+            // Create a table element
+            const table = document.createElement('table');
+            table.setAttribute('border', '1'); 
+            table.style.width = '100%'; 
 
-        // Create the table header
-        const thead = document.createElement('thead');
-        thead.innerHTML = `
-            <tr>
-                <th>Institution</th>
-                <th>City</th>
-                <th>Country</th>
-                <th>Travel Start</th>
-                <th>Travel End</th>
-                <th>Actions</th>
-            </tr>
-        `;
-        table.appendChild(thead);
-
-        // Create the table body
-        const tbody = document.createElement('tbody');
-        data.forEach(travel => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${travel.institution}</td>
-                <td>${travel.city}</td>
-                <td><a href="/country-details/${travel.country}" class="btn btn-link">${travel.country}</a></td>
-                <td>${formatDateToDDMMYYYY(travel.travelstart)}</td>
-                <td>${formatDateToDDMMYYYY(travel.travelend)}</td>
-                <td>
-                    <button class="btn btn-primary btn-sm" onclick="window.location.href='/update-travel/${travel.travelid}'">Update</button>
-                    <button class="btn btn-danger btn-sm" onclick="deleteTravel(${travel.travelid})">Delete</button>
-                </td>
+            // Create the table header
+            const thead = document.createElement('thead');
+            thead.innerHTML = `
+                <tr>
+                    <th>Institution</th>
+                    <th>City</th>
+                    <th>Country</th>
+                    <th>Travel Start</th>
+                    <th>Travel End</th>
+                    <th>Actions</th>
+                </tr>
             `;
-            tbody.appendChild(row);
-        });
-        table.appendChild(tbody);
+            table.appendChild(thead);
 
-        // Append the table to the travelList container
-        travelList.appendChild(table);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        const travelList = document.getElementById('travelList');
-        travelList.innerHTML = '<p>An error occurred while loading travel records. Please try again later.</p>';
-    });
+            // Create the table body
+            const tbody = document.createElement('tbody');
+            data.forEach(travel => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${travel.institution}</td>
+                    <td>${travel.city}</td>
+                    <td><a href="/country-details/${travel.country}" class="btn btn-link">${travel.country}</a></td>
+                    <td>${formatDateToDDMMYYYY(travel.travelstart)}</td>
+                    <td>${formatDateToDDMMYYYY(travel.travelend)}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="window.location.href='/update-travel/${travel.travelid}'">Update</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteTravel(${travel.travelid})">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            table.appendChild(tbody);
+
+            // Append the table to the travelList container
+            travelList.appendChild(table);
+        })
+        .catch(error => {
+            console.error('Error:', error); // Debug log
+            const travelList = document.getElementById('travelList');
+            travelList.innerHTML = '<p>An error occurred while loading travel records. Please try again later.</p>';
+        });
 }
 
 // Loads travel record for update
 function loadTravelForUpdate(travelId) {
-    fetch(`/api/travel/${travelId}`)
+    fetch(`/api/get-travel/${travelId}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);

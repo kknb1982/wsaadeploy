@@ -80,7 +80,7 @@ def update_travel(travelid):
         return redirect('/login')  # Redirect to login if the user is not logged in
 
     # Fetch the travel details by ID directly from the data handler
-    travel_data = get_travel_by_id(travelid)  # Use the travelid directly from the URL
+    travel_data = get_travel_by_id(travelid)  # Use the travelid directly from the data handler
 
     print(f"Travel data fetched for ID {travelid}: {travel_data}")  # Debugging log
 
@@ -208,7 +208,7 @@ def get_travel(userid):
     if session['userid'] != userid:
         return jsonify({'error': 'Unauthorized access'}), 403
 
-    travel_data = get_travel_data_for_user(userid)
+    travel_data = get_travel_data_for_user(userid)  # Fetch travel data for the user
     if not travel_data:
         return jsonify({'error': 'No travel records found'}), 404
 
@@ -310,7 +310,7 @@ def api_update_travel():
     return jsonify({'message': 'Travel record updated successfully.'}), 200
 
 @app.route('/api/travel/<travelid>', methods=['GET'])
-def get_travel_by_id(travelid):
+def api_get_travel_by_id(travelid):
     try:
         # Read all travel data
         all_travel_data = read_travel_data()
