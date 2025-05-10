@@ -75,32 +75,43 @@ def view_travel(userid):
         'surname': session['surname']}
     return render_template('view-travel.html', user=user)
     
-@app.route('/update-travel/<travelid>', methods=['GET'])
+@app.route('/update-travel/<travelid>', methods=['GET','POST'])
 def update_travel(travelid):
     if 'userid' not in session:
         return redirect('/login')  # Redirect to login if the user is not logged in
 
+    if request.method == 'GET':
     # Fetch the travel details by ID directly from the data handler
-    travel_data = get_travel_by_id(travelid)  # Use the travelid directly from the data handler
+        travel_data = get_travel_by_id(travelid)  # Use the travelid directly from the data handler
 
-    print(f"Travel data fetched for ID {travelid}: {travel_data}")  # Debugging log
+        print(f"Travel data fetched for ID {travelid}: {travel_data}")  # Debugging log
 
-    if not travel_data:
-        return "Travel record not found.", 404
+        if not travel_data:
+            return "Travel record not found.", 404
 
-    if not isinstance(travel_data, dict):
-        return "Invalid travel data format.", 500
+        if not isinstance(travel_data, dict):
+            return "Invalid travel data format.", 500
 
-    # Format the travel start and end dates for display (dd-mm-yyyy)
-    travel_data['travelstart_display'] = datetime.strptime(travel_data['travelstart'], '%Y-%m-%d').strftime('%d-%m-%Y')
-    travel_data['travelend_display'] = datetime.strptime(travel_data['travelend'], '%Y-%m-%d').strftime('%d-%m-%Y')
+        # Format the travel start and end dates for display (dd-mm-yyyy)
+        travel_data['travelstart_display'] = datetime.strptime(travel_data['travelstart'], '%Y-%m-%d').strftime('%d-%m-%Y')
+        travel_data['travelend_display'] = datetime.strptime(travel_data['travelend'], '%Y-%m-%d').strftime('%d-%m-%Y')
     
-    # Keep the original dates in yyyy-mm-dd format for the input fields
-    travel_data['travelstart'] = datetime.strptime(travel_data['travelstart'], '%Y-%m-%d').strftime('%Y-%m-%d')
-    travel_data['travelend'] = datetime.strptime(travel_data['travelend'], '%Y-%m-%d').strftime('%Y-%m-%d')
+        # Keep the original dates in yyyy-mm-dd format for the input fields
+        travel_data['travelstart'] = datetime.strptime(travel_data['travelstart'], '%Y-%m-%d').strftime('%Y-%m-%d')
+        travel_data['travelend'] = datetime.strptime(travel_data['travelend'], '%Y-%m-%d').strftime('%Y-%m-%d')
 
-    return render_template('update-travel.html', travel=travel_data)
+        return render_template('update-travel.html', travel=travel_data)
     
+    elif request.method == 'POST':
+        # Handle the update request
+        updated_travel = request.get_json()
+        print(f"Updated travel data: {updated_travel}")  # Debugging log
+
+        success = update_travel_record(updated_travel)
+        if success:
+            return jsonify({'message': 'Travel record updated successfully.'}), 200
+        else:
+            return jsonify({'error': 'Failed to update travel record.'}), 500
 
 @app.route('/admin-dashboard/<userid>', methods=['GET'])
 def admin_dashboard(userid):

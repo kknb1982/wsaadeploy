@@ -1,6 +1,5 @@
 userid,travelid,institution,travelstart,travelend,country,city
 S1,1,August University,2025-05-12,2025-05-17,Germany,G�ttingen
-S1,2,RCSI,2025-05-18,2025-05-19,Ireland,Dublin
 S3,4,Uppsala University,2025-04-01,2025-09-01,Sweden,Uppsala
 S2,5,University of Amsterdam,2025-05-01,2025-09-01,Netherlands,Amsterdam
 S4,6,University of Melbourne,2025-05-01,2025-09-01,Australia,Melbourne
