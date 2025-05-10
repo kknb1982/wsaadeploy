@@ -300,6 +300,14 @@ function loadIncidentNews() {
     // Fetch news for each travel record
     travelData.forEach(travel => {
         const travelId = travel.travelid;
+        const country = travel.country;
+
+        // Use the country as the default keyword if no user keyword is provided
+        const keywords = userKeyword || country;
+
+        // Use "title" as the default search field if no user selection is made
+        const searchIn = userSearchIn || 'title';
+
     // Fetch news for the current travel
     fetch(`/api/news?keywords=${encodeURIComponent(keywords)}&searchIn=${encodeURIComponent(searchIn)}`)
         .then(response => {
@@ -315,7 +323,7 @@ function loadIncidentNews() {
 
             // Populate the "News" column with the fetched news
             if (newsData.length === 0) {
-                newsCell.innerHTML = 'No news found';
+                newsCell.innerHTML = 'No news found for this search.';
             } else {
                 const newsList = newsData.map(article => `<a href="${article.url}" target="_blank">${article.title}</a>`).join('<br>');
                 newsCell.innerHTML = newsList;
@@ -450,3 +458,25 @@ function loginAsAdmin() {
         });
 }
 
+function downloadNames() {
+    fetch('/api/download-names')    
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+            }
+        return response.blob(); // Get the response as a blob
+        })
+    .then(blob => {
+        const url = window.URL.createObjectURL(blob); // Create a URL for the blob
+        const a = document.createElement('a'); // Create an anchor element
+        a.href = url; // Set the href to the blob URL
+        a.download = 'names.csv'; // Set the download attribute with a filename
+        document.body.appendChild(a); // Append the anchor to the body
+        a.click(); // Programmatically click the anchor to trigger the download
+        a.remove(); // Remove the anchor from the document
+        })
+    .catch(error => {
+        console.error('Error downloading names:', error);
+        alert('An error occurred while downloading names. Please try again.');
+    });
+}

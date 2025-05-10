@@ -323,7 +323,7 @@ def api_countries():
 @app.route('/api/news', methods=['GET'])
 def api_news():
     keywords = request.args.get('keywords', '')
-    search_in = request.args.get('searchIn', 'title,description,content')
+    search_in = request.args.get('searchIn', 'title')
 
     # Example current travel data (replace with actual data)
     current_travel_data = current_travel()
@@ -333,6 +333,17 @@ def api_news():
     # Fetch news using the News API client
     news = fetch_news(current_travel_data, keywords=keywords, search_in=search_in)
     return jsonify(news)
+
+@app.route('/api/download-names', methods=['GET'])
+def download_names():
+    if 'userid' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    if session['role'] != 'admin':
+        return jsonify({'error': 'Unauthorized access'}), 403
+    
+
+    # Fetch the travel data for the logged-in user
+
 
 if __name__ == '__main__':
     print("Loading countries data...")

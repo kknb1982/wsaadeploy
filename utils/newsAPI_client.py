@@ -20,15 +20,15 @@ def fetch_news(current_travel, keywords='', search_in='title,description,content
     
     # Construct the query parameters
     for travel in current_travel:
-        city = current_travel['city']
-        country = current_travel['country']
+        city = travel.get('city', '')
+        country = travel.get('country', '')
         today = datetime.now()
         three_days_ago = today - timedelta(days=3)
         today = today.strftime('%Y-%m-%d')
         three_days_ago = three_days_ago.strftime('%Y-%m-%d')
 
     parameters = {
-        'q': f"{keywords} (+{country})".strip(),
+        'q': f"{keywords} {city} {country}".strip(),
         'searchIn': search_in,
         'from': three_days_ago,
         'to': today,
