@@ -7,7 +7,7 @@
 
     <body>
         <div class="container mt-4">
-            <h1>Welcome, {{ user['firstname'] }} {{ user['surname'] }}!</h1>
+            <h1>Welcome, {{ user['firstname'] }} {{ user['surname'] }}</h1>
 
             <div class="mt-4">
                 <button class="button button1" onclick="window.location.href='/update-user/{{session['userid']}}'">Update Contact Details</button>

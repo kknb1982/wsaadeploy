@@ -17,11 +17,13 @@
                     <label for="userid" class="form-label">User ID:</label>
                     <input type="text" id="userid" name="userid" placeholder="Enter your User ID" class="form-control" required>
                 </div>
+                <br>
+                <button class="button button1" type="submit">Login</button>
+
+                <button class="button button3" type="button" onclick="loginAsAdmin()">Login as Administrator</button>
             </form>
 
-            <button class="button button1" type="submit" onclick="window.location.href='/dashboard/{{session['userid']}}'">Login</button>
 
-            <button class="button button3" type="button" onclick="loginAsAdmin()">Login as Administrator</button>
         
             <br><br><button class="button button2" onclick="window.location.href='/'">Back to Home</button>
         </div>

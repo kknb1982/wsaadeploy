@@ -82,6 +82,9 @@ def update_travel(travelid):
     # Fetch the travel details by ID
     travel_data = get_travel_by_id(travelid)  # Use the travelid directly from the URL
 
+    if not isinstance(travel_data, dict):
+        return "Invalid travel data format.", 500
+    
     if not travel_data:
         return "Travel record not found.", 404
     travel_data['travelstart'] = datetime.strptime(travel_data['travelstart'], '%Y-%m-%d').strftime('%d/%m/%Y')
