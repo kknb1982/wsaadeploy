@@ -294,29 +294,40 @@ function filterCountries() {
 
 // Fetch incident news for current travel records
 function loadIncidentNews() {
-    if (travelData.length === 0) {
-        alert('No travel records available to fetch news.');
-        return;
-    }
+    const keywords = document.getElementById('filterKeyword').value;
+    const searchIn = document.getElementById('searchIn').value;
 
     // Fetch news for each travel record
     travelData.forEach(travel => {
-        fetch(`/api/news?city=${encodeURIComponent(travel.city)}&country=${encodeURIComponent(travel.country)}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(news => {
-                // Add news to the travel record
-                travel.news = news;
-                displayTravelDataWithNews(travelData); // Update the table with news
-            })
-            .catch(error => {
-                console.error(`Error fetching news for ${travel.city}, ${travel.country}:`, error);
-            });
-    });
+        const travelId = travel.travelid;
+    // Fetch news for the current travel
+    fetch(`/api/news?keywords=${encodeURIComponent(keywords)}&searchIn=${encodeURIComponent(searchIn)}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(newsData => {
+            // Find the corresponding row in the table
+            const row = document.querySelector(`#travelTableBody tr[data-travel-id="${travelId}"]`);
+            const newsCell = row.querySelector('.news-cell');
+
+            // Populate the "News" column with the fetched news
+            if (newsData.length === 0) {
+                newsCell.innerHTML = 'No news found';
+            } else {
+                const newsList = newsData.map(article => `<a href="${article.url}" target="_blank">${article.title}</a>`).join('<br>');
+                newsCell.innerHTML = newsList;
+            }
+        })
+        .catch(error => {
+            console.error(`Error fetching news for travel ID ${travelId}:`, error);
+            const row = document.querySelector(`#travelTableBody tr[data-travel-id="${travelId}"]`);
+            const newsCell = row.querySelector('.news-cell');
+            newsCell.innerHTML = 'Error loading news';
+        });
+});
 }
 
 // Display travel data with news in the table
@@ -394,7 +405,7 @@ function loadCountryList() {
             const countryTableBody = document.querySelector('#countryTable tbody');
             countryTableBody.innerHTML = '<tr><td colspan="2">An error occurred while loading the country list. Please try again later.</td></tr>';
         });
-}""
+};
 
 function loginAsAdmin() {
     const userid = document.getElementById('userid').value;

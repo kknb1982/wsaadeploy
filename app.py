@@ -169,7 +169,7 @@ def country_details(country):
     return render_template('country-details.html', country=country_details)
 
 @app.route('/current-travel', methods=['GET'])
-def current_travel():
+def view_current_travel():
     # Fetch all current travel records
     travel_records = current_travel()  # Assuming this function exists in your `data_handler` module
     return render_template('current-travel.html', travel_records=travel_records)
@@ -322,19 +322,16 @@ def api_countries():
 
 @app.route('/api/news', methods=['GET'])
 def api_news():
-    city = request.args.get('city')
-    country = request.args.get('country')
+    keywords = request.args.get('keywords', '')
+    search_in = request.args.get('searchIn', 'title,description,content')
 
-    if not city or not country:
-        return jsonify({'error': 'City and country are required'}), 400
+    # Example current travel data (replace with actual data)
+    current_travel_data = current_travel()
+    if not current_travel_data:
+        return jsonify({'error': 'No current travel data found'}), 404
 
     # Fetch news using the News API client
-    from utils.newsAPI_client import fetch_news
-    news = fetch_news({'city': city, 'country': country})
-
-    if news is None:
-        return jsonify({'error': 'Failed to fetch news'}), 500
-
+    news = fetch_news(current_travel_data, keywords=keywords, search_in=search_in)
     return jsonify(news)
 
 if __name__ == '__main__':

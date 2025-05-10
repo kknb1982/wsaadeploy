@@ -18,6 +18,7 @@
         <h1>Incident news for current travel</h1><br>
 
         <!-- Filters Section -->
+        <h2>Filter for travel records</h2>
         <div class="filters">
             <label for="filterCity">City:</label>
             <input type="text" id="filterCity" placeholder="Enter city" oninput="filterTravel()">
@@ -32,12 +33,32 @@
             <input type="date" id="filterEndDate" onchange="filterTravel()">
         </div>
 
+        <br><h2>Search for incident news</h2>
+
+        <div class="filters">
+            <label for="filterKeyword">Keyword:</label>
+            <input type="text" id="filterKeyword" placeholder="Enter keyword">
+
+            <label for="searchIn">Search in:</label>
+
+            <select id="searchIn">
+                <option value="title">Title</option>
+                <option value="description">Description</option>
+                <option value="content">Content</option>
+                <option value="title,description">Title and Description</option>
+                <option value="title,description,content">All Fields</option>
+            </select>
+        </div>
+
+
         <!-- Button to Load Incident News -->
-        <br>
+
         <div style="margin-top: 20px;">
             <button class="button button1" onclick="loadIncidentNews()">Load Incident News</button>
         </div>
-
+        
+        <br>
+        <h3>Current travel that meets the criteria</h3>
         <div id="travelList">
             <table class="table table-bordered">
                 <thead>
@@ -53,7 +74,18 @@
                     </tr>
                 </thead>
                 <tbody id="travelTableBody">
-                    <!-- Travel data will be dynamically loaded here -->
+                    {% for travel in travel_records %}
+                    <tr data-travel-id="{{ travel.travelid }}">
+                        <td>{{ travel.travelid }}</td>
+                        <td>{{ travel.userid }}</td>
+                        <td>{{ travel.institution }}</td>
+                        <td>{{ travel.city }}</td>
+                        <td>{{ travel.country }}</td>
+                        <td>{{ travel.travelstart }}</td>
+                        <td>{{ travel.travelend }}</td>
+                        <td class="news-cell">No news loaded</td>
+                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>        
         </div>
