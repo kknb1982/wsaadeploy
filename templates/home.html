@@ -7,25 +7,16 @@
     </head>
 
     <body>
-        {% if session['userid'] %}
-            <div style="background-color: lightgray; padding: 10px;">
-                Logged in as: <strong>{{ session['userid'] }}</strong>
-                <button class="button button 5" onclick="window.location.href='/logout'">Logout</button>
-            </div>
-        {% endif %}
-        
         <h1>Travel Home Page</h1>
         <p>Welcome to the University of Galway travel site.<br> <br>
         
-        This web app is designed to allow staff and students to log their travel. Staff in Global Galway will be able to monitor if a disaster or event occurs close to your travel location, so we can check in.</p>
+        This web app is designed to allow staff and students to log their travel, learn about the countries they are travelling to and check for the top headlines in those countries. 
+        
+        Staff in Global Galway will be able to monitor current travel and make contact if an incident occurs close to your travel location, so we can check in.</p>
         </p>
-        <p>Here you can add, update and view your travel history. Plus see FCO advice for your or any disasters that may have occurred near to your travel locations.
-        </p>
+        <h2>Staff and Student portal:</h2>
         <button class = "button button1" onclick="window.location.href='/login'">Login</button><br><br>
 
-
-        <p>If you would like to browse and search the event reports directly please go to: <a href="https://reliefweb.int/disasters">Relief Web disasters</a></p>
-        <p>For more information on the FCO advice please go to: <a href="https://www.gov.uk/foreign-travel-advice">FCO travel advice</a></p>
         <h2>Administrators portal:</h2>
         <button class="button button2" onclick="window.location.href='/login'">Login</button>
         </html>
