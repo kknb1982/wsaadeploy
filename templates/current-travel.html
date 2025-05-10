@@ -54,7 +54,7 @@
                         <td>{{ travel.userid }}</td>
                         <td>{{ travel.institution }}</td>
                         <td>{{ travel.city }}</td>
-                        <td>{{ travel.country }}</td>
+                        <td><a href="/country-details/{{travel.country | lower | replace(' ', '-') }}"{{ travel.country }}></a></td>
                         <td>{{ travel.travelstart }}</td>
                         <td>{{ travel.travelend }}</td>
                     </tr>
@@ -65,5 +65,7 @@
 
         <br>
         <button class="button button2" onclick="window.location.href='/dashboard/{{session['userid']}}'">Back to Admin Dashboard</button>
+        <button class="button button3" onclick="window.location.href='/news-search'">Search news</button>
+
     </body>
 </html>

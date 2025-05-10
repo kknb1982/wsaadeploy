@@ -28,6 +28,11 @@
             </tr>
 
             <tr>
+                <th>Country code</th>
+                <td>{{ country['cca2'] }}</td>
+            </tr>
+
+            <tr>
                 <th>Languages</th>
                 <td>{{country['languages']}}</td>
             </tr>
@@ -59,9 +64,7 @@
 
             <tr>
                 <th>Top headlines</th>
-                <td>
-
-                </td>
+                <td><a href="/headlines/{{ country['cca2'] }}" class="btn btn-link">View Top Headlines</a></td>
             </tr>
         </table>
 

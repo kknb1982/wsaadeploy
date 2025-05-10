@@ -1,0 +1,30 @@
+<html>
+    <head>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+        <link href="/static/css/style.css" rel="stylesheet">
+        <title>Search News</title>
+        <script src="/static/js/main.js" defer></script>
+    </head>
+
+    <body>
+        <div class="container mt-4">
+            <h1>Top headlines for {{country_code}}</h1>
+
+            <ul class="list-group">
+                {% if headlines %}
+                    {% for headline in headlines %}
+                        <li class="list-group-item">
+                            <h5>{{ headline.title }}</h5>
+                            <p>{{ headline.description }}</p>
+                            <a href="{{ headline.url }}" target="_blank" class="btn btn-primary btn-sm">Read More</a>
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    <li class="list-group-item">No headlines found for this country.</li>
+                {% endif %}
+            </ul>
+            <br>
+            <button class="btn btn-secondary" onclick="window.location.href='/country-details/{{ country['name']['common'] | lower | replace(' ', '-') }}'">Back to Country Details</button>
+        </div>
+    </body>
+</html>

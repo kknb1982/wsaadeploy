@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, jsonify, redirect, session
 from flask_session import Session
 from utils.data_handler import read_travel_data, get_travel_by_id, current_travel, add_travel_record, update_travel_record, delete_travel_record, get_user_info, update_user_record, get_travel_data_for_user
-from utils.newsAPI_client import fetch_news
-from utils.countries_API import get_countries
+from utils.newsAPI_client import fetch_news, fetch_headlines
+from utils.countries_API import get_countries, get_country_details, CACHE_FILE
 from datetime import datetime
+import json
 
 
 app = Flask(__name__,static_folder='static', template_folder='templates')
@@ -90,29 +91,16 @@ def update_travel(travelid):
     if not isinstance(travel_data, dict):
         return "Invalid travel data format.", 500
 
-    # Format the travel start and end dates
-    travel_data['travelstart'] = datetime.strptime(travel_data['travelstart'], '%Y-%m-%d').strftime('%d/%m/%Y')
-    travel_data['travelend'] = datetime.strptime(travel_data['travelend'], '%Y-%m-%d').strftime('%d/%m/%Y')
+    # Format the travel start and end dates for display (dd-mm-yyyy)
+    travel_data['travelstart_display'] = datetime.strptime(travel_data['travelstart'], '%Y-%m-%d').strftime('%d-%m-%Y')
+    travel_data['travelend_display'] = datetime.strptime(travel_data['travelend'], '%Y-%m-%d').strftime('%d-%m-%Y')
+    
+    # Keep the original dates in yyyy-mm-dd format for the input fields
+    travel_data['travelstart'] = datetime.strptime(travel_data['travelstart'], '%Y-%m-%d').strftime('%Y-%m-%d')
+    travel_data['travelend'] = datetime.strptime(travel_data['travelend'], '%Y-%m-%d').strftime('%Y-%m-%d')
 
     return render_template('update-travel.html', travel=travel_data)
     
-@app.route('/personal-report/<userid>', methods=['GET'])
-def report(userid):
-    if 'userid' not in session:
-        return redirect('/login')
-    user = {       
-        'userid': session['userid'],
-        'firstname': session['firstname'],
-        'surname': session['surname']}
-    travel_data = get_travel_data_for_user(user['userid'])
-    if not travel_data:
-        return "No travel records found for this user.", 404
-    
-    alerts = check_travel_alerts()
-    
-    for travel in travel_data:
-        travel['alerts'] = next((alert['articles'] for alert in alerts if alert['travelid'] == travel['travelid']), [])
-    return render_template('personal-report.html', user=user, travel_data=travel_data)
 
 @app.route('/admin-dashboard/<userid>', methods=['GET'])
 def admin_dashboard(userid):
@@ -154,29 +142,17 @@ def country_list():
     countries_data = sorted(countries_data, key=lambda x: x['name']['common'].lower())
     return render_template('country-list.html', countries=countries_data)
 
-@app.route('/country-details/<country>', methods=['GET'])
-def country_details(country):
-    countries_data = get_countries()
-    
-    country_data = next(
-        (c for c in countries_data if c['name']['common'].lower() == country.lower()), 
-        None
-    )
+@app.route('/country-details/<country_name>', methods=['GET'])
+def country_details(country_name):
+    normalised_country_name = country_name.replace("-", " ").replace("_", " ")
+    country = get_country_details(normalised_country_name)
 
-    if not country_data:
-        return "Country not found.", 404
-    
-    country_details = {
-        'name': country_data['name']['common'],
-        'capital': country_data['capital'][0] if 'capital' in country_data else 'N/A',
-        'population': country_data['population'] if 'population' in country_data else 'N/A',
-        'flag': country_data['flags']['png'] if 'flags' in country_data else None,
-        'languages': ', '.join(country_data['languages'].values()) if 'languages' in country_data else 'N/A',
-        'currencies': ', '.join(country_data['currencies'].keys()) if 'currencies' in country_data else 'N/A',
-        'maps': country_data['maps']['googleMaps'] if 'maps' in country_data else None
-    }
+    if not country:
+        return "Country details not found.", 404
 
-    return render_template('country-details.html', country=country_details)
+    print(f"Country details: {country}")  # Debugging log
+
+    return render_template('country-details.html', country=country)
 
 @app.route('/current-travel', methods=['GET'])
 def view_current_travel():
@@ -192,6 +168,26 @@ def news_search():
     # Fetch news using the News API client
     news = fetch_news(keyword=keyword, search_in=search_in)
     return render_template('news-search.html', news=news)
+
+@app.route('/headlines/<country_code>', methods=['GET'])
+def headlines(country_code):
+    from utils.newsAPI_client import fetch_headlines
+
+    # Fetch top headlines for the given country code
+    headlines = fetch_headlines(country_code)
+
+    country = None
+    with open(CACHE_FILE, 'r') as f:
+        countries_data = json.load(f)
+        for c in countries_data['data']:
+            if c.get('cca2', '').lower() == country_code.lower():
+                country = c
+                break
+
+    if not country:
+        return "Country details not found.", 404
+
+    return render_template('headlines.html', country_code=country_code, headlines=headlines, country=country)
 
 @app.route('/logout')
 def logout():

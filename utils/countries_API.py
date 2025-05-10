@@ -45,3 +45,23 @@ def get_countries():
         return None
 
 
+def get_country_details(country_name):
+    with open(CACHE_FILE, 'r') as f:
+        countries_data = json.load(f)
+        
+    print(f"Searching for country: {country_name}")  # Debugging log
+    available_countries = [country['name']['common'].lower() for country in countries_data['data']]
+    print(f"Available countries: {available_countries}")  # Debugging log
+
+    for country in countries_data['data']:
+        if country['name']['common'].lower() == country_name.lower():
+            return {
+                'name': country['name']['common'],
+                'capital': country.get('capital', ['N/A'])[0],
+                'cca2': country.get('cca2', 'N/A'),  # Ensure cca2 is included
+                'languages': ', '.join(country.get('languages', {}).values()),
+                'currencies': ', '.join([currency['name'] for currency in country.get('currencies', {}).values()]),
+                'flag': country.get('flags', {}).get('png', ''),
+                'maps': country.get('maps', {}).get('googleMaps', '')
+            }
+    return None

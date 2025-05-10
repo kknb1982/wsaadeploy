@@ -104,27 +104,6 @@ function loadTravel(userid) {
         });
 }
 
-// Loads travel record for update
-function loadTravelForUpdate(travelId) {
-    fetch(`/api/get-travel/${travelId}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-        }
-            return response.json();
-        })
-        .then(travel => {
-            document.getElementById('institution').value = data.institution;
-            document.getElementById('city').value = data.city;
-            document.getElementById('country').value = data.country;
-            document.getElementById('travelstart').value = formatDateToDDMMYYYY(data.travelstart); // Format date to YYYY-MM-DD
-            document.getElementById('travelend').value = formatDateToDDMMYYYY(data.travelend); // Format date to YYYY-MM-DD
-        }) 
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while loading the travel record. Please try again later.');
-        });
-}
 
 function submitUpdateTravel(travelId) {
     const travelData = {

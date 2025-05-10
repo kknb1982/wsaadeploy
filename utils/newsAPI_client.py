@@ -14,6 +14,8 @@ if not NEWS_API_KEY:
 
 NEWS_API_URL = "https://newsapi.org/v2/everything"
 
+HEADLINES_API_URL = "https://newsapi.org/v2/top-headlines"
+
 def fetch_news(keyword='', search_in='title,description,content', date_from=None, date_to=None):
     if not keyword:
         keyword = 'news'  # Default keyword if none is provided
@@ -39,4 +41,17 @@ def fetch_news(keyword='', search_in='title,description,content', date_from=None
         print(f"Error fetching news: {response.status_code}, {response.text}")
         return []
 
+def fetch_headlines(country_code):
+    parameters = {
+        'country': country_code,
+        'apiKey': NEWS_API_KEY
+    }
 
+    # Make the API request
+    response = requests.get(HEADLINES_API_URL, params=parameters)
+    if response.status_code == 200:
+        data = response.json()
+        return [{"title": article['title'], "description": article.get('description', ''), "url": article['url']} for article in data.get('articles', [])]
+    else:
+        print(f"Error fetching headlines: {response.status_code}, {response.text}")
+        return []
