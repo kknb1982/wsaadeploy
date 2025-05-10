@@ -74,22 +74,26 @@ def view_travel(userid):
         'surname': session['surname']}
     return render_template('view-travel.html', user=user)
     
-@app.route('/update-travel/<travelid>', methods = ['GET'])
+@app.route('/update-travel/<travelid>', methods=['GET'])
 def update_travel(travelid):
     if 'userid' not in session:
         return redirect('/login')  # Redirect to login if the user is not logged in
 
-    # Fetch the travel details by ID
-    travel_data = get_travel_by_id(travelid)  # Assuming this function exists in your `data_handler` module
-    print(f"Travel data fetched for ID {travelid}: {travel_data}")  # Debugging log # Use the travelid directly from the URL
+    # Fetch the travel details by ID directly from the data handler
+    travel_data = get_travel_by_id(travelid)  # Use the travelid directly from the URL
+
+    print(f"Travel data fetched for ID {travelid}: {travel_data}")  # Debugging log
+
+    if not travel_data:
+        return "Travel record not found.", 404
 
     if not isinstance(travel_data, dict):
         return "Invalid travel data format.", 500
-    
-    if not travel_data:
-        return "Travel record not found.", 404
+
+    # Format the travel start and end dates
     travel_data['travelstart'] = datetime.strptime(travel_data['travelstart'], '%Y-%m-%d').strftime('%d/%m/%Y')
     travel_data['travelend'] = datetime.strptime(travel_data['travelend'], '%Y-%m-%d').strftime('%d/%m/%Y')
+
     return render_template('update-travel.html', travel=travel_data)
     
 @app.route('/personal-report/<userid>', methods=['GET'])
