@@ -289,8 +289,8 @@ function setDefaultDates() {
     const formattedToday = today.toISOString().split('T')[0];
     const formattedThreeDaysAgo = threeDaysAgo.toISOString().split('T')[0];
 
-    fromDateInput.value = formattedFromDate;
-    toDateInput.value = formattedToDate; 
+    fromDateInput = formattedToday;
+    toDateInput = formattedThreeDaysAgo; 
 }
     
 // Fetch incident news for current travel records
