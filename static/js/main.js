@@ -187,7 +187,6 @@ function submitUpdateUser() {
         surname: document.getElementById('surname').value,
         email: document.getElementById('email').value,
         phone: document.getElementById('phone').value,
-        role: document.getElementById('role').value
     };
 
     fetch('/api/user', {

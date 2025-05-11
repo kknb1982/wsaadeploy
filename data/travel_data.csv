@@ -1,5 +1,5 @@
 userid,travelid,institution,city,country,travelstart,travelend
-S1,1,New York Fine Art,New York,United States,2023-01-01,2023-02-15
+S1,1,New York Fine Art,New York,United States,2023-01-01,2023-03-15
 S1,2,Film Studies Central,Los Angeles,United States,2023-02-10,2023-02-15
 S3,3,University of Melbourne,Melbourne,Australia,2025-05-01,2025-09-01
 S3,4,Frasers University,Sydney,Australia,2025-10-01,2026-02-01
@@ -14,4 +14,4 @@ S6,12,Uppsala University,Uppsala,Sweden,2025-06-05,2025-06-18
 S6,13,Concord University,Toronto,Canada,2025-07-01,2025-08-01
 S7,14,Concord University,Toronto,Canada,2025-03-01,2026-06-01
 S6,15,Comenius University,Bratislava,Slovakia,2025-09-01,2025-09-15
-S1,16,Gent University,Ghent,Belgium,2025-05-01,2025-09-01
+S1,16,Gent University,Ghent,Belgium,2025-05-01,2025-09-15
