@@ -106,7 +106,9 @@ function loadTravel(userid) {
 
 
 function submitUpdateTravel(travelId) {
+    const userId = "{{session['userid']}}"; // Get the user ID from the session
     const travelData = {
+        userid: userId,
         travelid: travelId, // Use the travelId parameter directly
         institution: document.getElementById('institution').value,
         city: document.getElementById('city').value,
@@ -120,17 +122,22 @@ function submitUpdateTravel(travelId) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(travelData)
     })
-    .then(response => {
-        if (response.ok) {
-            alert('Travel record updated successfully!');
-            window.location.href = '/view-travel/{{session["userid"]}}'; // Redirect back to the travel list
-        } else {
-            alert('Failed to update travel record. Please try again.');
+    .then(response => response.json())
+    .then(data => {
+        const messageDiv = document.getElementById('message'); // Get the message container
+        if (data.message) {
+            messageDiv.style.color = 'green';
+            messageDiv.textContent = data.message;
+        } else if (data.error) {
+            messageDiv.style.color = 'red';
+            messageDiv.textContent = `Error: ${data.error}`;
         }
     })
     .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while updating the travel record.');
+        console.error('Error:', error); // Debug log
+        const messageDiv = document.getElementById('message'); // Get the message container
+        messageDiv.style.color = 'red';
+        messageDiv.textContent = 'An error occurred while updating the travel record.';
     });
 }
 
@@ -246,8 +253,8 @@ function displayTravelData(data) {
     data.forEach(travel => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${travel.travelid}</td>
             <td>${travel.userid}</td>
+            <td>${travel.travelid}</td>
             <td>${travel.institution}</td>
             <td>${travel.city}</td>
             <td>${travel.country}</td>
@@ -377,6 +384,7 @@ function loadCountryList() {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${country.name.common}</td>
+                    <td>${country.name.official}</td>
                     <td>
                         <a href="/country-details/${country.name.common.toLowerCase().replace(/ /g, '-')}" class="btn btn-link">
                             View Details

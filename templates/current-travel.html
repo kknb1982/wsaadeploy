@@ -32,14 +32,14 @@
             <label for="filterEndDate">End Date:</label>
             <input type="date" id="filterEndDate" onchange="filterTravel()">
 
-        <br>
+        <br><br>
         <h3>Current travel that meets the criteria</h3>
         <div id="travelList">
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th>Travel ID</th>
                         <th>User ID</th>
+                        <th>Travel ID</th>
                         <th>Institution</th>
                         <th>City</th>
                         <th>Country</th>
@@ -50,8 +50,8 @@
                 <tbody id="travelTableBody">
                     {% for travel in travel_records %}
                     <tr data-travel-id="{{ travel.travelid }}">
+                        <td>{{ travel.userid}}</td>
                         <td>{{ travel.travelid }}</td>
-                        <td>{{ travel.userid }}</td>
                         <td>{{ travel.institution }}</td>
                         <td>{{ travel.city }}</td>
                         <td><a href="/country-details/{{travel.country | lower | replace(' ', '-') }}"{{ travel.country }}></a></td>

@@ -36,6 +36,30 @@ def login():
             return "Invalid User ID. Please try again.", 401
     return render_template('login.html')
 
+@app.route('/login-admin', methods=['GET', 'POST'])
+def loggin_admin():
+    if request.method == 'POST':
+        userid = request.form.get('userid')
+        user_info = get_user_info(userid)  # Fetch user info from the database or data source
+        if user_info:
+            # Store user details in the session
+            session['userid'] = userid
+            session['firstname'] = user_info['firstname']
+            session['surname'] = user_info['surname']
+            session['role'] = user_info['role']
+            session['email'] = user_info['email']
+            session['phone'] = user_info['phone']
+            # Redirect to the dashboard with the userid
+            return redirect(f'/dashboard/{userid}')
+        else:
+            return "Invalid User ID. Please try again.", 401
+    return render_template('login-admin.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return render_template('logout.html')
+
 @app.route('/dashboard/<userid>')
 def dashboard(userid):
     if 'userid' not in session:
@@ -103,15 +127,19 @@ def update_travel(travelid):
         return render_template('update-travel.html', travel=travel_data)
     
     elif request.method == 'POST':
-        # Handle the update request
-        updated_travel = request.get_json()
-        print(f"Updated travel data: {updated_travel}")  # Debugging log
+        try: 
+            # Handle the update request
+            updated_travel = request.get_json()
+            print(f"Updated travel data: {updated_travel}")  # Debugging log
 
-        success = update_travel_record(updated_travel)
-        if success:
-            return jsonify({'message': 'Travel record updated successfully.'}), 200
-        else:
-            return jsonify({'error': 'Failed to update travel record.'}), 500
+            success, error_message = update_travel_record(updated_travel)
+            if success:
+                return jsonify({'message': 'Travel record updated successfully.'}), 200
+            else:
+                return jsonify({'error': error_message}), 400
+        except Exception as e:
+            print(f"Error updating travel record: {e}")  # Debugging log
+            return jsonify({'error': 'An internal server error occurred.'}), 500
 
 @app.route('/admin-dashboard/<userid>', methods=['GET'])
 def admin_dashboard(userid):
@@ -167,8 +195,11 @@ def country_details(country_name):
 
 @app.route('/current-travel', methods=['GET'])
 def view_current_travel():
+    if 'userid' not in session:
+        return redirect('/login')
     # Fetch all current travel records
     travel_records = current_travel()  # Assuming this function exists in your `data_handler` module
+ 
     return render_template('current-travel.html', travel_records=travel_records)
 
 @app.route('/news-search', methods=['GET'])
@@ -200,10 +231,6 @@ def headlines(country_code):
 
     return render_template('headlines.html', country_code=country_code, headlines=headlines, country=country)
 
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect('/login')
 
 # API to get all travel records
 @app.route('/api/travel/<userid>', methods=['GET'])

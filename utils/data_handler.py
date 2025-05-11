@@ -17,6 +17,9 @@ def is_valid_country(country_name):
     with open(COUNTRIES_FILE, 'r') as f:
         countries_data = json.load(f)
     
+    print(f"Checking validity for country: {country_name}")
+    available_countries = [country['name']['common'].lower() for country in countries_data['data']]
+    print(f"Available countries: {available_countries}")  # Debugging log
     for country in countries_data['data']:
         if country['name']['common'].lower() == country_name.lower():
             return True
@@ -45,7 +48,7 @@ def add_travel_record(travel_info):
         travel_info['travelend'] = datetime.strptime(travel_info['travelend'], '%Y-%m-%d').strftime('%Y-%m-%d')
         
         with open(TRAVEL_DATA_FILE, mode='a', newline='', encoding='utf-8') as f:
-            writer = csv.DictWriter(f, fieldnames=['userid', 'travelid', 'institution', 'travelstart', 'travelend', 'country','city'])
+            writer = csv.DictWriter(f, fieldnames=['userid', 'travelid', 'institution', 'city','country','travelstart', 'travelend'])
             writer.writerow(travel_info)
         return True
     except Exception as e:
@@ -71,7 +74,7 @@ def delete_travel_record(travelid):
 
         # Write the updated travel data back to the CSV file
         with open(TRAVEL_DATA_FILE, mode='w', newline='', encoding='utf-8') as f:
-            writer = csv.DictWriter(f, fieldnames=['userid', 'travelid', 'institution', 'travelstart', 'travelend', 'country', 'city'])
+            writer = csv.DictWriter(f, fieldnames=['userid', 'travelid', 'institution','city', 'country','travelstart', 'travelend' ])
             writer.writeheader()
             writer.writerows(updated_travel_data)
 
@@ -106,26 +109,41 @@ def get_travel_by_id(travelid):
     return None
 
 def update_travel_record(updated_travel):
-    if not is_valid_country(updated_travel['country']):
-        print(f"Invalid country: {updated_travel['country']}")
-        return False  # Reject the operation
+    try:
+        if not is_valid_country(updated_travel['country']):
+            error_message = f"Invalid country: {updated_travel['country']}"
+            print(error_message)  # Debugging log
+            return False, error_message  
     
-    all_travel_data = read_travel_data()
-    for travel in all_travel_data:
-        if travel['id'] == updated_travel['id']:
-            travel['institution'] = updated_travel.get('institution', travel['institution'])
-            travel['city'] = updated_travel.get('city', travel['city'])
-            travel['country'] = updated_travel.get('country', travel['country'])
-            travel['travelstart'] = updated_travel.get('travelstart', travel['travelstart'])
-            travel['travelend'] = updated_travel.get('travelend', travel['travelend'])
-            break
+        all_travel_data = read_travel_data()
+        record_found = False
+        for travel in all_travel_data:
+            if travel['travelid'] == updated_travel['travelid']:
+                travel['institution'] = updated_travel.get('institution', travel['institution'])
+                travel['city'] = updated_travel.get('city', travel['city'])
+                travel['country'] = updated_travel.get('country', travel['country'])
+                travel['travelstart'] = updated_travel.get('travelstart', travel['travelstart'])
+                travel['travelend'] = updated_travel.get('travelend', travel['travelend'])
+                record_found = True
+                break
+            
+        if not record_found:
+            error_message = f"Travel record with ID {updated_travel['travelid']} not found."
+            print(error_message)  # Debugging log
+            return False, error_message
+        # Write the updated data back to the CSV file
+        with open(TRAVEL_DATA_FILE, mode='w', newline='', encoding='utf-8') as f:
+            writer = csv.DictWriter(f, fieldnames=['userid', 'travelid', 'institution', 'city', 'country', 'travelstart', 'travelend'])
+            writer.writeheader()
+            writer.writerows(all_travel_data)
 
-    # Write the updated data back to the CSV file
-    with open(TRAVEL_DATA_FILE, mode='w', newline='', encoding='utf-8') as f:
-        writer = csv.DictWriter(f, fieldnames=['id', 'institution', 'city', 'country', 'travelstart', 'travelend'])
-        writer.writeheader()
-        writer.writerows(all_travel_data)
-
+        print("Travel record updated successfully.")  # Debugging log
+        return True, None  # Return success
+    except Exception as e:
+        error_message = f"Error updating travel record: {e}"
+        print(error_message)  # Debugging log
+        return False, error_message
+    
 def update_user_record(updated_user):
     users = read_users_data()  # Read all users
     for user in users:

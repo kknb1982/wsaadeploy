@@ -8,7 +8,9 @@
     <body>
         <div class="container mt-4">
             <h1>Login</h1>
-            <p>Enter your user ID to log in. </p>
+            <p>Enter your user ID to log in. 
+                
+                Only administrators will be able to access the admin dashboard.</p>
 
             <form method="POST" action="/login">
                 <div class="mb-3">
@@ -16,8 +18,8 @@
                     <input type="text" id="userid" name="userid" placeholder="Enter your User ID" class="form-control" required>
                 </div>
                 <br>
-                <button class="button button1" type="submit">Login</button>
 
+                <button class="button button3" type="button" onclick="loginAsAdmin()">Login as Administrator</button>
             </form>
 
 

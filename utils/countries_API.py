@@ -57,6 +57,7 @@ def get_country_details(country_name):
         if country['name']['common'].lower() == country_name.lower():
             return {
                 'name': country['name']['common'],
+                'official_name': country['name']['official'],
                 'capital': country.get('capital', ['N/A'])[0],
                 'cca2': country.get('cca2', 'N/A'),  # Ensure cca2 is included
                 'languages': ', '.join(country.get('languages', {}).values()),
