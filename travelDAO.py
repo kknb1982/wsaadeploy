@@ -87,6 +87,13 @@ def is_user():
     cursor.close
     return is_admin
 
+# Fetch user
+def fetch_user():
+    if not con:
+        connect()
+    sql = "SELECT from users WHERE userid=%"
+    value = (xxxxxxxx,)
+
 
 
 
