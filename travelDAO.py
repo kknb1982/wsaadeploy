@@ -4,99 +4,10 @@ import mysql.connector as msql
 from datetime import datetime
 ##
 def connect():
-    con = msql.connect(host='localhost', database='travel', user='root', password='')
+    con = msql.connect(host='localhost', database='ggtravel', user='root', password='')
     cursor = con.cursor
 
-
-# Create the users tables
-def create_user_table():
-    try:
-        connect()
-        cursor = con.cursor
-        # Drop the table if it exists
-        cursor.execute('DROP TABLE IF EXISTS users')
-        
-        # Create the table
-        sql = """CREATE TABLE users
-            (userid INT(5) PRIMARY KEY,
-            firstname VARCHAR(20),
-            lastname VARCHAR(20),
-            email VARCHAR (30),
-            phone VARCHAR (40),
-            role enum student, staff, admin"""
-        cursor.execute(sql)
-        cursor.close()
-    except:
-        print("Unable to create users table")
-
-# Create the travel tables
-def create_travel_table()
-    cursor = con.cursor
-    cursor.execute('DROP TABLE IF EXISTS travel')
-    fields = """
-    CREATE TABLE travel(
-        travelid VARCHAR(5),
-        institution VARCHAR (20),
-        city VARCHAR (25),
-        countryid INT,
-        travelstart DATETIME,
-        travelend DATETIME,
-        userid int,
-        PRIMARY KEY (travelid)
-        FOREIGN KEY (userid) REFERENCES users(userid)
-        FOREIGN KEY (countryid) REFERENCE country(countryid)
-    )
-    """
-    cursor.execute(fields)
-    cursor.close()
-
-
-# Create the country table
-def create_country_table():
-    cursor = con.cursor
-    cursor.execute('DROP TABLE IF EXISTS country')
-    fields = """
-    CREATE TABLE country(
-        countryid INT PRIMARY KEY,
-        commonname VARCHAR (20),
-        officialname VARCHAR (25),
-        cca2 VARCHAR (2),
-        currency VARCHAR (10)
-    )
-    """
-    cursor.execute(fields)
-    cursor.close()
-
-# Check user is in the users tables
-def is_user():
-    if not con:
-        connect()
-    sql = "SELECT from users WHERE userid =%"
-    value = (xxxxxxxxxxxxxxx,)
-    cursor.execute(sql,value)
-    is_valid_user = cursor.fetchone
-    cursor.close
-    return is_valid_user
-
-# Check user is administrator
-def is_user():
-    if not con:
-        connect()
-    sql = "SELECT firstname from users WHERE userid=% AND role =%"
-    values = (xxxxxxxxxxxxxxx,yyyyyyyyyyyyyyyyyyyy,)
-    cursor.execute(sql,values)
-    is_admin = cursor.fetchone()
-    cursor.close
-    return is_admin
-
-# Fetch user
-def fetch_user():
-    if not con:
-        connect()
-    sql = "SELECT * from users WHERE userid=%s"
-    value = (xxxxxxxx,)
-    cursor.execute(sql,values)
-
+# Get the information for a specific user
 def get_user_info(userid):
     if not con:
         connect()
@@ -107,6 +18,7 @@ def get_user_info(userid):
     cursor.close
     return user_info
 
+# Update the user record with inputted details
 def update_user_record(updated_user):
     if not con:
         connect()
@@ -120,8 +32,15 @@ def update_user_record(updated_user):
     cursor.close
     return True
 
-
-
+# Update the role of the user
+def update_user_role(input_userid, input_role):
+    if not con:
+        connect()
+    sql = "UPDATE users SET role = %s WHERE userid = %s"
+    values =  (input_role,input_userid,)
+    cursor.execute(sql,values)
+    cursor.close 
+    return True
 
 def is_valid_country(country_name):
     if not con:
@@ -129,9 +48,9 @@ def is_valid_country(country_name):
     sql = "Select countryid from country WHERE commonname = %s"
     values = (xxxxxxxxxxxxxx,)
     cursor.execute(sql,values)
-    is_valid_country = cursor.fetchone()
+    valid_country = cursor.fetchone()
     cursor.close()
-    return is_valid_country
+    return valid_country
 
 def get_all_travel():
     if not con:
@@ -151,6 +70,16 @@ def get_travel_by_userid(userid):
     user_travel_data = cursor.fetchall()
     cursor.close()
     return user_travel_data
+
+def get_travel_by_id(travelid):
+    if not con:
+        connect()
+    sql = "SELECT * from travel where travelid = %s"
+    value = (travelid,)
+    cursor.execute(sql,value)
+    travel_data = cursor.fetchall()
+    cursor.close
+    return travel_data
 
 def update_travel_record(updated_travel):
     if not con:
@@ -184,14 +113,13 @@ def delete_travel_record(travelid):
     print(f"Travel with ID {travelid} was deleted")
     cursor.close()
 
-def current_travel():
+def get_current_travel():
     if not con:
         connect()
     sql = "SELECT * from travel WHERE travelstart > %s AND travelend < %s"
     value = (datetime.now(),)
     cursor.execute(sql,value)
     current_travel = cursor.fetchall()
-    
     return current_travel
 
 

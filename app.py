@@ -36,24 +36,7 @@ def login():
             return "Invalid User ID. Please try again.", 401
     return render_template('login.html')
 
-@app.route('/login-admin', methods=['GET', 'POST'])
-def loggin_admin():
-    if request.method == 'POST':
-        userid = request.form.get('userid')
-        user_info = get_user_info(userid)  # Fetch user info from the database or data source
-        if user_info:
-            # Store user details in the session
-            session['userid'] = userid
-            session['firstname'] = user_info['firstname']
-            session['surname'] = user_info['surname']
-            session['role'] = user_info['role']
-            session['email'] = user_info['email']
-            session['phone'] = user_info['phone']
-            # Redirect to the dashboard with the userid
-            return redirect(f'/dashboard/{userid}')
-        else:
-            return "Invalid User ID. Please try again.", 401
-    return render_template('login-admin.html')
+
 
 @app.route('/logout')
 def logout():
@@ -71,15 +54,18 @@ def dashboard(userid):
         return "Unauthorised access", 403
     return render_template('dashboard.html', user=session)
 
-@app.route('/update-user/<userid>')
-def update_user(userid):
+@app.route('/update-user/<userid>', methods = ['GET' , 'POST'])
+def update_user(userid, updated_user):
     if 'userid' not in session:
         return redirect('/login')
-
-    user_data = get_user_info(userid)
-    if not user_data:
+    if not updated_user:
         return "User not found.", 404
-    return render_template('update-user.html', user=user_data)
+    if request.method == 'POST':
+        update_user(updated_user)
+        return True
+    if request.method == 'GET':
+        user_info = get_user_info(userid)
+    return render_template('update-user.html', user=user_info)
 
 @app.route('/add-travel/<userid>')
 def add_travel(userid):
@@ -97,7 +83,8 @@ def view_travel(userid):
         'userid': session['userid'],
         'firstname': session['firstname'],
         'surname': session['surname']}
-    return render_template('view-travel.html', user=user)
+    user_travel_data = get_travel_by_userid(userid)
+    return render_template('view-travel.html', user=user,travel=user_travel_data)
     
 @app.route('/update-travel/<travelid>', methods=['GET','POST'])
 def update_travel(travelid):
@@ -105,24 +92,21 @@ def update_travel(travelid):
         return redirect('/login')  # Redirect to login if the user is not logged in
 
     if request.method == 'GET':
-    # Fetch the travel details by ID directly from the data handler
-        travel_data = get_travel_by_id(travelid)  # Use the travelid directly from the data handler
 
+        travel_data = get_travel_by_id(travelid)
         print(f"Travel data fetched for ID {travelid}: {travel_data}")  # Debugging log
-
         if not travel_data:
             return "Travel record not found.", 404
-
         if not isinstance(travel_data, dict):
             return "Invalid travel data format.", 500
 
         # Format the travel start and end dates for display (dd-mm-yyyy)
-        travel_data['travelstart_display'] = datetime.strptime(travel_data['travelstart'], '%Y-%m-%d').strftime('%d-%m-%Y')
-        travel_data['travelend_display'] = datetime.strptime(travel_data['travelend'], '%Y-%m-%d').strftime('%d-%m-%Y')
+        #travel_data['travelstart_display'] = datetime.strptime(travel_data['travelstart'], '%Y-%m-%d').strftime('%d-%m-%Y')
+        #travel_data['travelend_display'] = datetime.strptime(travel_data['travelend'], '%Y-%m-%d').strftime('%d-%m-%Y')
     
         # Keep the original dates in yyyy-mm-dd format for the input fields
-        travel_data['travelstart'] = datetime.strptime(travel_data['travelstart'], '%Y-%m-%d').strftime('%Y-%m-%d')
-        travel_data['travelend'] = datetime.strptime(travel_data['travelend'], '%Y-%m-%d').strftime('%Y-%m-%d')
+        #travel_data['travelstart'] = datetime.strptime(travel_data['travelstart'], '%Y-%m-%d').strftime('%Y-%m-%d')
+        #travel_data['travelend'] = datetime.strptime(travel_data['travelend'], '%Y-%m-%d').strftime('%Y-%m-%d')
 
         return render_template('update-travel.html', travel=travel_data)
     
@@ -159,21 +143,15 @@ def admin_dashboard(userid):
     
     return render_template('admin-dashboard.html', user=user)
 
-
 @app.route('/current_travel/<userid>', methods=['GET'])
 def current_travel_admin(userid):
     if 'userid' not in session:
         return redirect('/login')
-    
-    travels = current_travel()
-    travel_data_with_news = []
-    if travels:
-        for travel in travels:
-            news = fetch_news(travel)
-            travel['news'] = news
-            travel_data_with_news.append(travel)
-    
-    return render_template('current_travel.html', travel_data=travel_data_with_news)
+    if session['role'] != "admin":
+        return redirect('/login')
+    else:
+        travels = get_current_travel()
+        return render_template('current_travel.html', travel_data=travels)
 
 @app.route('/country-list', methods=['GET'])
 def country_list():
@@ -193,14 +171,6 @@ def country_details(country_name):
 
     return render_template('country-details.html', country=country)
 
-@app.route('/current-travel', methods=['GET'])
-def view_current_travel():
-    if 'userid' not in session:
-        return redirect('/login')
-    # Fetch all current travel records
-    travel_records = current_travel()  # Assuming this function exists in your `data_handler` module
- 
-    return render_template('current-travel.html', travel_records=travel_records)
 
 @app.route('/news-search', methods=['GET'])
 def news_search():
