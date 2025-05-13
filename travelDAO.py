@@ -6,11 +6,7 @@ from datetime import datetime
 def connect():
     con = msql.connect(host='localhost', database='travel', user='root', password='')
     cursor = con.cursor
-        
 
-# Create the database
-def create_database():
-    
 
 # Create the users tables
 def create_user_table():
