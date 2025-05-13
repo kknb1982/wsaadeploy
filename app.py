@@ -189,7 +189,7 @@ def headlines(country_code):
     headlines = fetch_headlines(country_code)
 
     country = None
-    with open(CACHE_FILE, 'r') as f:
+    with open(CACHE_FILE, 'r') as f:pytho
         countries_data = json.load(f)
         for c in countries_data['data']:
             if c.get('cca2', '').lower() == country_code.lower():
