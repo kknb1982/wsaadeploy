@@ -17,6 +17,29 @@ def home():
     session.clear()  # Clear session on home page load
     return render_template('home.html')
 
+@app.route('/register', methods=['GET', 'POST'])
+def register_user():
+    if request.method == 'POST':
+        firstname = request.form.get('firstname')
+        lastname = request.form.get('lastname')
+        email = request.form.get('email')
+        phone = request.form.get('phone')
+        role = 'user'  # or assign based on your logic
+
+        try:
+            con = connect()
+            cursor = con.cursor()
+            sql = "INSERT INTO users (firstname, lastname, email, phone, role) VALUES (%s, %s, %s, %s, %s)"
+            values = (firstname, lastname, email, phone, role)
+            cursor.execute(sql, values)
+            con.commit()
+            cursor.close()
+            con.close()
+            return redirect(url_for('success'))  # Redirect to a success page
+        except mysql.connector.Error as err:
+            return f"Error: {err}"
+    return render_template('register.html')
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -54,18 +77,27 @@ def dashboard(userid):
         return "Unauthorised access", 403
     return render_template('dashboard.html', user=session)
 
-@app.route('/update-user/<userid>', methods = ['GET' , 'POST'])
-def update_user(userid, updated_user):
-    if 'userid' not in session:
-        return redirect('/login')
-    if not updated_user:
-        return "User not found.", 404
+@app.route('/update-user/<int:userid>', methods=['GET', 'POST'])
+def update_user(userid):
+    if userid not in session:
+        return redirect ('/login')
     if request.method == 'POST':
-        update_user(updated_user)
-        return True
-    if request.method == 'GET':
+        updated_user = {
+            'userid': userid,
+            'firstname': request.form.get('firstname'),
+            'lastname': request.form.get('lastname'),
+            'email': request.form.get('email'),
+            'phone': request.form.get('phone'),
+            'role': request.form.get('role')
+        }
+        # Call your function to update the user record in the database
+        update_user_record(updated_user)
+        return redirect(url_for('user_profile', userid=userid))
+    else:
+        # Handle GET request, e.g., render the update form
         user_info = get_user_info(userid)
-    return render_template('update-user.html', user=user_info)
+        return render_template('update_user.html', user=user_info)
+
 
 @app.route('/add-travel/<userid>')
 def add_travel(userid):
@@ -83,7 +115,7 @@ def view_travel(userid):
         'userid': session['userid'],
         'firstname': session['firstname'],
         'surname': session['surname']}
-    user_travel_data = get_travel_by_userid(userid)
+    user_travel_data = get_travel_by_id(userid)
     return render_template('view-travel.html', user=user,travel=user_travel_data)
     
 @app.route('/update-travel/<travelid>', methods=['GET','POST'])
@@ -189,7 +221,7 @@ def headlines(country_code):
     headlines = fetch_headlines(country_code)
 
     country = None
-    with open(CACHE_FILE, 'r') as f:pytho
+    with open(CACHE_FILE, 'r') as f:
         countries_data = json.load(f)
         for c in countries_data['data']:
             if c.get('cca2', '').lower() == country_code.lower():
@@ -201,6 +233,28 @@ def headlines(country_code):
 
     return render_template('headlines.html', country_code=country_code, headlines=headlines, country=country)
 
+# Add a new user
+@app.route('/api/add_user', methods=['POST'])
+def add_user():
+    data = request.get_json()
+    firstname = data['firstname']
+    lastname = data['lastname']
+    email = data['email']
+    phone = data['phone']
+
+    try:
+        conn = sqlite3.connect('your_database.db')
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO users (firstname, lastname, email, phone, role) VALUES (?, ?, ?, ?, ?)",
+            (firstname, lastname, email, phone, 'student')
+        )
+        conn.commit()
+        return jsonify({"message": "User added successfully"}), 200
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
+    finally:
+        conn.close()
 
 # API to get all travel records
 @app.route('/api/travel/<userid>', methods=['GET'])
@@ -212,7 +266,7 @@ def get_travel(userid):
     if session['userid'] != userid:
         return jsonify({'error': 'Unauthorized access'}), 403
 
-    travel_data = get_travel_data_for_user(userid)  # Fetch travel data for the user
+    travel_data = get_travel_by_id(userid)  # Fetch travel data for the user
     if not travel_data:
         return jsonify({'error': 'No travel records found'}), 404
 
