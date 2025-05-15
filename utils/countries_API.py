@@ -1,68 +1,91 @@
 import requests
-import os
-import json
-from datetime import datetime, timedelta
+import mysql.connector
+from mysql.connector import Error
+from datetime import datetime
 
+# Database configuration
+DB_CONFIG = {
+    'host': 'localhost',
+    'database': 'ggtravel',
+    'user': 'root',
+    'password': ''  # Use env vars or secrets management in production
+}
+
+# API and fields
 COUNTRIES_API_URL = "https://restcountries.com/v3.1/all"
-FIELDS = "name,cca2,capital,car,currencies,flags,languages,maps"
-CACHE_FILE = os.path.join(os.path.dirname(__file__), '../data/countries_cache.json')
-CACHE_EXPIRY_DAYS = 7
+FIELDS = "name,cca2,currencies"
 
 def get_countries():
+    """Fetch countries data from REST Countries API."""
+    url = f"{COUNTRIES_API_URL}?fields={FIELDS}"
+    print(f"Fetching countries from URL: {url}")
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print("Failed to fetch countries data")
+        return []
+
+def extract_country_info(country):
+    """Extract relevant data for DB from API response."""
     try:
-        # Ensure the data folder exists
-        os.makedirs(os.path.dirname(CACHE_FILE), exist_ok=True)
+        common_name = country['name']['common']
+        official_name = country['name']['official']
+        cca2 = country['cca2']
         
-        if os.path.exists(CACHE_FILE):
-            print("Cache file found. Loading data from cache.")
-            with open(CACHE_FILE, 'r') as cache_file:
-                cache_data = json.load(cache_file)
-                last_updated = datetime.strptime(cache_data['timestamp'], '%Y-%m-%dT%H:%M:%S')
-                if (datetime.now() - last_updated).days < CACHE_EXPIRY_DAYS:
-                    print("Using cached countries data.")
-                    return cache_data['data']
-        
-        # If cache is missing or expired, fetch fresh data from the API
-        url = f"{COUNTRIES_API_URL}?fields={FIELDS}"
-        print(f"Fetching countries from URL: {url}")
-        response = requests.get(url)
-        if response.status_code == 200:
-            countries_data = response.json()
+        currencies = country.get('currencies', {})
+        currency = ','.join(currencies.keys()) if currencies else None
 
-            # Update the cache with the new data and timestamp
-            with open(CACHE_FILE, 'w') as cache_file:
-                json.dump({
-                    'timestamp': datetime.now().strftime('%Y-%m-%dT%H:%M:%S'),
-                    'data': countries_data
-                }, cache_file)
-
-            return countries_data
-        else:
-            print(f"Error fetching countries: {response.status_code}, {response.text}")
-            return None
-    except Exception as e:
-        print(f"Exception occurred: {e}")
+        return {
+            'commonname': common_name,
+            'officialname': official_name,
+            'cca2': cca2,
+            'currency': currency
+        }
+    except KeyError as e:
+        print(f"Missing field in data: {e}")
         return None
 
+def update_countries_table(countries_data):
+    """Insert or update country records in the database."""
+    try:
+        con = mysql.connector.connect(**DB_CONFIG)
+        cursor = con.cursor()
 
-def get_country_details(country_name):
-    with open(CACHE_FILE, 'r') as f:
-        countries_data = json.load(f)
-        
-    print(f"Searching for country: {country_name}")  # Debugging log
-    available_countries = [country['name']['common'].lower() for country in countries_data['data']]
-    print(f"Available countries: {available_countries}")  # Debugging log
+        for country in countries_data:
+            info = extract_country_info(country)
+            if info is None:
+                continue
+            
+            # UPSERT: Try to update first, then insert if not exists
+            update_sql = """
+                INSERT INTO country (commonname, officialname, cca2, currency)
+                VALUES (%s, %s, %s, %s)
+                ON DUPLICATE KEY UPDATE
+                    commonname = VALUES(commonname),
+                    officialname = VALUES(officialname),
+                    currency = VALUES(currency)
+            """
+            values = (
+                info['commonname'],
+                info['officialname'],
+                info['cca2'],
+                info['currency']
+            )
 
-    for country in countries_data['data']:
-        if country['name']['common'].lower() == country_name.lower():
-            return {
-                'name': country['name']['common'],
-                'official_name': country['name']['official'],
-                'capital': country.get('capital', ['N/A'])[0],
-                'cca2': country.get('cca2', 'N/A'),  # Ensure cca2 is included
-                'languages': ', '.join(country.get('languages', {}).values()),
-                'currencies': ', '.join([currency['name'] for currency in country.get('currencies', {}).values()]),
-                'flag': country.get('flags', {}).get('png', ''),
-                'maps': country.get('maps', {}).get('googleMaps', '')
-            }
-    return None
+            cursor.execute(update_sql, values)
+
+        con.commit()
+        print("Countries table updated.")
+    except Error as e:
+        print(f"Database error: {e}")
+    finally:
+        if cursor:
+            cursor.close()
+        if con:
+            con.close()
+
+if __name__ == "__main__":
+    countries_data = get_countries()
+    if countries_data:
+        update_countries_table(countries_data)
