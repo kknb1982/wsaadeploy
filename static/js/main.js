@@ -1,3 +1,37 @@
+// Add new user (new users are automatically added a students)
+function addUser() {
+    document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("add_user");
+
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const userData = {
+            firstname: document.getElementById("firstname").value,
+            lastname: document.getElementById("lastname").value,
+            email: document.getElementById("email").value,
+            phone: document.getElementById("phone").value
+        };
+
+        try {
+            const response = await fetch("/api/add_user", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(userData)
+            });
+
+            const result = await response.json();
+            alert(result.message);
+            if (response.ok) form.reset();
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Network error. Please try again.");
+        }
+    });
+});
+}
 // Add new travel record
 function submitTravel() {
     const travelData = {
