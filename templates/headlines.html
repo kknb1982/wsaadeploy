@@ -24,7 +24,7 @@
                 {% endif %}
             </ul>
             <br>
-            <button class="btn btn-secondary" onclick="window.location.href='/country-details/{{ country['name']['common'] | lower | replace(' ', '-') }}'">Back to Country Details</button>
+            <button class="btn btn-secondary" onclick="window.location.href='/country-details/{{ country['common_name'] | lower | replace(' ', '-') }}'">Back to Country Details</button>
         </div>
     </body>
 </html>

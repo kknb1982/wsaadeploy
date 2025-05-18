@@ -26,7 +26,16 @@ def get_countries():
             insert_query = """
             INSERT INTO country (common_name, official_name, capital, population, cca2, currency, languages, flag_url, map_url)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ON DUPLICATE KEY UPDATE
+                official_name = VALUES(official_name),
+                capital = VALUES(capital),
+                population = VALUES(population),
+                currency = VALUES(currency),
+                languages = VALUES(languages),
+                flag_url = VALUES(flag_url),
+                map_url = VALUES(map_url)
             """
+
 
             # Connect to the database
             conn = mysql.connector.connect(**DB_CONFIG)

@@ -20,22 +20,15 @@ def home():
 @app.route('/register', methods=['GET', 'POST'])
 def register_user():
     if request.method == 'POST':
-        firstname = request.form.get('firstname')
-        lastname = request.form.get('lastname')
-        email = request.form.get('email')
-        phone = request.form.get('phone')
-        role = 'student'
+        data = request.get_json()
+        firstname = data.get('firstname')
+        lastname = data.get('lastname')
+        email = data.get('email')
+        phone = data.get('phone')
 
         try:
-            con = connect()
-            cursor = con.cursor()
-            sql = "INSERT INTO users (firstname, lastname, email, phone, role) VALUES (%s, %s, %s, %s, %s)"
-            values = (firstname, lastname, email, phone, role)
-            cursor.execute(sql, values)
-            con.commit()
-            cursor.close()
-            con.close()
-            return redirect(url_for('success'))  # Redirect to a success page
+            add_user(firstname, lastname, email, phone, role='student')
+            return jsonify({'success': True, 'message': 'User registered successfully!'}), 200
         except mysql.connector.Error as err:
             return f"Error: {err}"
     return render_template('register.html')
@@ -216,13 +209,8 @@ def headlines(country_code):
     headlines = fetch_headlines(country_code)
 
     country = None
-    with open(CACHE_FILE, 'r') as f:
-        countries_data = json.load(f)
-        for c in countries_data['data']:
-            if c.get('cca2', '').lower() == country_code.lower():
-                country = c
-                break
-
+    countries_data = load_countries()
+    country = next((c for c in countries_data if c.get('cca2', '').lower() == country_code.lower()), None)
     if not country:
         return "Country details not found.", 404
 
@@ -431,6 +419,7 @@ def download_names():
 
 
 if __name__ == '__main__':
+    get_countries()
     app.run(debug=True)
     
 

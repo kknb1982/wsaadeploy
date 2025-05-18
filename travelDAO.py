@@ -31,7 +31,7 @@ def connect():
     official_name VARCHAR(150),
     capital VARCHAR(100),
     population BIGINT,
-    cca2 CHAR(2),
+    cca2 CHAR(2) UNIQUE,
     currency JSON,
     languages JSON,
     flag_url VARCHAR(255),
@@ -53,7 +53,7 @@ def connect():
 
 # ---------------- USER HANDLING ---------------- #
 
-def add_user(firstname, lastname, email, phone, role='student'):
+def add_user(firstname, lastname, email, phone, role):
     con, cursor = connect()
     sql = "INSERT INTO users (firstname, lastname, email, phone, role) VALUES (%s, %s, %s, %s, %s)"
     values = (firstname, lastname, email, phone, role)
@@ -250,7 +250,7 @@ def get_country_details(normalised_country_name):
 #--------------------COUNTRY DATA
 def load_countries():
     con, cursor = connect()
-    cursor.execute("SELECT DISTINCT common_name, official_name, countryid FROM country")
+    cursor.execute("SELECT DISTINCT common_name, official_name, countryid, cca2 FROM country")
     countries_data = cursor.fetchall()
     cursor.close()
     con.close()

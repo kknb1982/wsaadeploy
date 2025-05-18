@@ -16,7 +16,7 @@
         </style>
     </head>
     
-    <h1>Country Details for {{country['name']}}</h1>
+    <h1>Country Details for {{country['common_name']}}</h1>
 
     <body>
         <p> <img src="{{ country['flag'] }}" alt="Flag of {{ country['name'] }}" style="width: 100px; height: auto;"></p>
@@ -24,7 +24,7 @@
         <table>
             <tr>
                 <th>Common Name of the Country</th>
-                <td>{{ country['name'] }}</td>
+                <td>{{ country['common_name'] }}</td>
             </tr>
             <tr>
                 <th>Official Name of the Country</th>
@@ -58,15 +58,15 @@
             <tr>
                 <th>Department of Foreign Affairs and Trade Ireland</th>
                 <td>
-                    <a href="https://www.ireland.ie/en/dfa/overseas-travel/advice/{{ country['name'] | lower | replace(' ', '-') }}" target="_blank">
-                    Irish Government Travel Advice for {{ country['name'] }}</a>
+                    <a href="https://www.ireland.ie/en/dfa/overseas-travel/advice/{{ country['common_name'] | lower | replace(' ', '-') }}" target="_blank">
+                    Irish Government Travel Advice for {{ country['common_name'] }}</a>
             </tr>
 
             <tr>
                 <th>UK Foreign Office Travel Advice</th>
                 <td>
-                    <a href="https://www.gov.uk/foreign-travel-advice/{{ country['name'] | lower | replace(' ', '-') }}" target="_blank">
-                    UK Government Travel Advice for {{ country['name'] }}</a>
+                    <a href="https://www.gov.uk/foreign-travel-advice/{{ country['common_name'] | lower | replace(' ', '-') }}" target="_blank">
+                    UK Government Travel Advice for {{ country['common_name'] }}</a>
                 </td>
             </tr>
 
