@@ -2,29 +2,79 @@ import requests
 import mysql.connector
 from mysql.connector import Error
 from datetime import datetime
+import json
 
 # Database configuration
 DB_CONFIG = {
     'host': 'localhost',
     'database': 'ggtravel',
     'user': 'root',
-    'password': ''  # Use env vars or secrets management in production
+    'password': ''  
 }
 
 # API and fields
-COUNTRIES_API_URL = "https://restcountries.com/v3.1/all"
-FIELDS = "name,cca2,currencies"
+COUNTRIES_API_URL = "https://restcountries.com/v3.1/all?fields=name,capital,population,cca2,currencies,languages,flags,maps"
 
 def get_countries():
     """Fetch countries data from REST Countries API."""
-    url = f"{COUNTRIES_API_URL}?fields={FIELDS}"
+    url = f"{COUNTRIES_API_URL}"
     print(f"Fetching countries from URL: {url}")
-    response = requests.get(url)
-    if response.status_code == 200:
-        return response.json()
-    else:
-        print("Failed to fetch countries data")
-        return []
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            countries = response.json()
+            insert_query = """
+            INSERT INTO country (common_name, official_name, capital, population, cca2, currency, languages, flag_url, map_url)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """
+
+            # Connect to the database
+            conn = mysql.connector.connect(**DB_CONFIG)
+            cursor = conn.cursor()
+
+            for country in countries:
+                common_name = country.get('name', {}).get('common')
+                official_name = country.get('name', {}).get('official')
+                capital_list = country.get('capital')
+                capital = capital_list[0] if capital_list else None
+
+                population = country.get('population')
+                cca2 = country.get('cca2')
+                currency = json.dumps(country.get('currencies'))
+                languages = json.dumps(country.get('languages'))
+                flag_url = country.get('flags', {}).get('png')
+                map_url = country.get('maps', {}).get('googleMaps')
+
+                cursor.execute(insert_query, (
+                    common_name,
+                    official_name,
+                    capital,
+                    population,
+                    cca2,
+                    currency,
+                    languages,
+                    flag_url,
+                    map_url
+                ))
+
+            # Commit the transaction
+            conn.commit()
+            print("Countries data inserted successfully.")
+
+        else:
+            print(f"Failed to fetch countries data. Status code: {response.status_code}")
+
+    except Error as e:
+        print(f"Error while connecting to MySQL: {e}")
+
+    finally:
+        # Close the database connection
+        if conn.is_connected():
+            cursor.close()
+            conn.close()
+            print("MySQL connection is closed.")
+            
+
 
 def extract_country_info(country):
     """Extract relevant data for DB from API response."""

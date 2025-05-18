@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, jsonify, redirect, session
 from flask_session import Session
-from utils.data_handler import read_travel_data, get_travel_by_id, current_travel, add_travel_record, update_travel_record, delete_travel_record, get_user_info, update_user_record, get_travel_data_for_user
-from utils.newsAPI_client import fetch_news, fetch_headlines
-from travelDAO import load_countries
+from utils.newsAPI_client import *
+from utils.countries_API import *
+from travelDAO import *
 from datetime import datetime
 import json
 
@@ -49,7 +49,7 @@ def login():
             # Store user details in the session
             session['userid'] = userid
             session['firstname'] = user_info['firstname']
-            session['surname'] = user_info['surname']
+            session['lastname'] = user_info['lastname']
             session['role'] = user_info['role']
             session['email'] = user_info['email']
             session['phone'] = user_info['phone']
@@ -73,14 +73,16 @@ def dashboard(userid):
     
     print(f"Session User ID: {session['userid']}")  # Debugging log
     print(f"Requested User ID: {userid}")  # Debugging log
-    if session['userid'] != userid:
+    if str(session['userid']) != str(userid):
         return "Unauthorised access", 403
     return render_template('dashboard.html', user=session)
 
 @app.route('/update-user/<int:userid>', methods=['GET', 'POST'])
 def update_user(userid):
-    if userid not in session:
+    if 'userid' not in session:
         return redirect ('/login')
+    if str(session['userid']) != str(userid):
+        return "Unauthorised access", 403
     if request.method == 'POST':
         updated_user = {
             'userid': userid,
@@ -96,7 +98,8 @@ def update_user(userid):
     else:
         # Handle GET request, e.g., render the update form
         user_info = get_user_info(userid)
-        return render_template('update_user.html', user=user_info)
+        print(f"User info fetched for ID {userid}: {user_info}")  # Debugging log
+        return render_template('update-user.html', user=user_info)
 
 
 @app.route('/add-travel/<userid>')
@@ -114,7 +117,7 @@ def view_travel(userid):
     user = {       
         'userid': session['userid'],
         'firstname': session['firstname'],
-        'surname': session['surname']}
+        'lastname': session['lastname']}
     user_travel_data = get_travel_by_id(userid)
     return render_template('view-travel.html', user=user,travel=user_travel_data)
     
@@ -171,7 +174,7 @@ def admin_dashboard(userid):
     user = {       
         'userid': session['userid'],
         'firstname': session['firstname'],
-        'surname': session['surname']}
+        'lastname': session['lastname']}
     
     return render_template('admin-dashboard.html', user=user)
 
@@ -266,7 +269,7 @@ def get_travel(userid):
     if session['userid'] != userid:
         return jsonify({'error': 'Unauthorized access'}), 403
 
-    travel_data = get_travel_by_id(userid)  # Fetch travel data for the user
+    travel_data = get_travel_by_userid(userid)  # Fetch travel data for the user
     if not travel_data:
         return jsonify({'error': 'No travel records found'}), 404
 
@@ -351,7 +354,7 @@ def admin_login(userid):
     # Set the session for the admin user
     session['userid'] = user_info['userid']
     session['firstname'] = user_info['firstname']
-    session['surname'] = user_info['surname']
+    session['lastname'] = user_info['lastname']
     session['role'] = user_info['role']
     session['email'] = user_info['email']
     session['phone'] = user_info['phone']
@@ -403,6 +406,13 @@ def api_countries():
     countries_data = load_countries()
     countries_data = sorted(countries_data, key=lambda x: x['name']['common'].lower())
     return jsonify(countries_data)
+
+@app.route('/api/countries-simple', methods=['GET'])
+def api_countries_simple():
+    countries = load_countries()
+    # Return only countryid and commonname
+    simple = [{'countryid': c['countryid'], 'commonname': c['common_name']} for c in countries]
+    return jsonify(simple)
 
 @app.route('/api/news', methods=['GET'])
 def api_news():

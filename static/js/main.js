@@ -34,10 +34,18 @@ function addUser() {
 }
 // Add new travel record
 function submitTravel() {
+    const countryInput = document.getElementById('country').value.trim();
+    const countryObj = countries.find(c => c.commonname.toLowerCase() === countryInput.toLowerCase());
+    const messageDiv = document.getElementById('message');
+    if (!countryObj) {
+        messageDiv.style.color = 'red';
+        messageDiv.textContent = 'Invalid country. Please select a valid country from the list.';
+        return;
+        }
     const travelData = {
         institution: document.getElementById('institution').value,
         city: document.getElementById('city').value,
-        country: document.getElementById('country').value,
+        countryid: countryObj.countryid,
         travelstart: document.getElementById('travelstart').value,
         travelend: document.getElementById('travelend').value
     };
@@ -218,7 +226,7 @@ function submitUpdateUser() {
     const userData = {
         userid: userId, // Include the current user's ID
         firstname: document.getElementById('firstname').value,
-        surname: document.getElementById('surname').value,
+        lastname: document.getElementById('lastname').value,
         email: document.getElementById('email').value,
         phone: document.getElementById('phone').value,
     };

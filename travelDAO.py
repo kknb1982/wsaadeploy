@@ -14,6 +14,43 @@ def connect():
     cursor = con.cursor(dictionary=True)
     return con, cursor
 
+
+"""CREATE TABLE users (
+    userid INT NOT NULL AUTO_INCREMENT,
+    firstname VARCHAR(100) NOT NULL,
+    lastname VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    phone VARCHAR(20),
+    role VARCHAR(50),
+    PRIMARY KEY (userid)
+);
+
+#CREATE TABLE country (
+    countryid INT AUTO_INCREMENT PRIMARY KEY,
+    common_name VARCHAR(100),
+    official_name VARCHAR(150),
+    capital VARCHAR(100),
+    population BIGINT,
+    cca2 CHAR(2),
+    currency JSON,
+    languages JSON,
+    flag_url VARCHAR(255),
+    map_url VARCHAR(255)
+);
+
+#CREATE TABLE travel (
+    travelid INT NOT NULL AUTO_INCREMENT,
+    userid INT NOT NULL,
+    institution VARCHAR(255),
+    city VARCHAR(100),
+    countryid INT NOT NULL,
+    travelstart DATE,
+    travelend DATE,
+    PRIMARY KEY (travelid),
+    FOREIGN KEY (userid) REFERENCES users(userid),
+    FOREIGN KEY (countryid) REFERENCES country(countryid)
+);"""
+
 # ---------------- USER HANDLING ---------------- #
 
 def add_user(firstname, lastname, email, phone, role='student'):
@@ -62,31 +99,18 @@ def update_user_role(userid, role):
     con.close()
     return True
 
-# ---------------- COUNTRY VALIDATION ---------------- #
-
-def is_valid_country(country_name):
-    con, cursor = connect()
-    sql = "SELECT countryid FROM country WHERE commonname = %s"
-    cursor.execute(sql, (country_name,))
-    valid_country = cursor.fetchone()
-    cursor.close()
-    con.close()
-    return valid_country is not None
 
 # ---------------- TRAVEL HANDLING ---------------- #
 
 def add_travel_record(travel_info):
-    if not is_valid_country(travel_info['country']):
-        return False
-
     con, cursor = connect()
-    sql = """INSERT INTO travel (userid, institution, city, country, travelstart, travelend)
+    sql = """INSERT INTO travel (userid, institution, city, countryid, travelstart, travelend)
              VALUES (%s, %s, %s, %s, %s, %s)"""
     values = (
         travel_info['userid'],
         travel_info['institution'],
         travel_info['city'],
-        travel_info['country'],
+        travel_info['countryid'],
         travel_info['travelstart'],
         travel_info['travelend']
     )
@@ -108,6 +132,12 @@ def get_travel_by_userid(userid):
     con, cursor = connect()
     cursor.execute("SELECT * FROM travel WHERE userid = %s", (userid,))
     results = cursor.fetchall()
+    countries = load_countries()
+    country_map = {str(c['countryid']): c['common_name'] for c in countries}
+
+    for travel in results:
+        cid = str(travel['countryid'])
+        travel['country_name'] = country_map.get(cid, 'Unknown')
     cursor.close()
     con.close()
     return results

@@ -19,7 +19,8 @@
         
             <input type="text" id="institution" placeholder="Institution or company">
             <input type="text" id="city" placeholder="City">
-            <input type="text" id="country" placeholder="Country">
+            <input list="countryList" id="country" placeholder="Country">
+            <datalist id="countryList"></datalist>
             <input type="date" id="travelstart">
             <input type="date" id="travelend">
         
@@ -28,4 +29,20 @@
 
             <br><button class = "button button2" onclick="window.location.href='/dashboard/{{session['userid']}}'">Back to Dashboard</button>
         </body>
+
+        <script>
+            const currentUserId = "{{ session['userid'] }}";
+            let countries = [];
+            fetch('/api/countries-simple')
+                .then(res => res.json())
+                .then(data => {
+                    countries = data;
+                    const datalist = document.getElementById('countryList');
+                    data.forEach(c => {
+                        const option = document.createElement('option');
+                        option.value = c.commonname;
+                        datalist.appendChild(option);
+                    });
+                });
+        </script>
 </html>
