@@ -1,3 +1,5 @@
+let countries = [];
+
 // Add new user (new users are automatically added a students)
 function addUser() {
     document.addEventListener("DOMContentLoaded", () => {
@@ -124,7 +126,7 @@ function loadTravel(userid) {
                 row.innerHTML = `
                     <td>${travel.institution}</td>
                     <td>${travel.city}</td>
-                    <td><a href="/country-details/${travel.country}" class="btn btn-link">${travel.country}</a></td>
+                    <td><a href="/country-details/${travel.country}" class="btn btn-link">${travel.country_name}</a></td>
                     <td>${formatDateToDDMMYYYY(travel.travelstart)}</td>
                     <td>${formatDateToDDMMYYYY(travel.travelend)}</td>
                     <td>
@@ -146,27 +148,59 @@ function loadTravel(userid) {
         });
 }
 
+function loadCountries() {
+    fetch('/api/countries-simple')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            countries = data; // Store the fetched countries in the global variable
+            console.log('Countries data loaded:', countries); // Debugging log
+        })
+        .catch(error => {
+            console.error('Error loading countries:', error);
+        });
+}
 
 function submitUpdateTravel(travelId) {
-    const userId = "{{session['userid']}}"; // Get the user ID from the session
+    console.log(`Updating travel record with ID: ${travelId}`); // Debugging log
+
+    if (countries.length === 0) {
+        console.error('Countries data is not loaded yet.');
+        alert('Countries data is not available. Please try again later.');
+        return;
+    }
+
+    const countryInput = document.getElementById('country').value.trim();
+    const countryObj = countries.find(c => c.commonname.toLowerCase() === countryInput.toLowerCase());
+    const messageDiv = document.getElementById('message');
+
+    if (!countryObj) {
+        messageDiv.style.color = 'red';
+        messageDiv.textContent = 'Invalid country. Please select a valid country from the list.';
+        return;
+    }
+
     const travelData = {
-        userid: userId,
-        travelid: travelId, // Use the travelId parameter directly
+        userid: "{{session['userid']}}", // Pass the user ID from the session
+        travelid: travelId,
         institution: document.getElementById('institution').value,
         city: document.getElementById('city').value,
-        country: document.getElementById('country').value,
-        travelstart: document.getElementById('travelstart').value, // Use the raw date value
-        travelend: document.getElementById('travelend').value // Use the raw date value
+        countryid: countryObj.countryid, // Send countryid instead of country name
+        travelstart: document.getElementById('travelstart').value,
+        travelend: document.getElementById('travelend').value
     };
 
-    fetch(`/update-travel/${travelId}`, { // Format the URL with travelId
+    fetch(`/update-travel/${travelId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(travelData)
     })
     .then(response => response.json())
     .then(data => {
-        const messageDiv = document.getElementById('message'); // Get the message container
         if (data.message) {
             messageDiv.style.color = 'green';
             messageDiv.textContent = data.message;
@@ -176,12 +210,12 @@ function submitUpdateTravel(travelId) {
         }
     })
     .catch(error => {
-        console.error('Error:', error); // Debug log
-        const messageDiv = document.getElementById('message'); // Get the message container
+        console.error('Error:', error);
         messageDiv.style.color = 'red';
         messageDiv.textContent = 'An error occurred while updating the travel record.';
     });
 }
+
 
 function deleteTravel(travelId) {
     if (confirm('Are you sure you want to delete this travel record?')) {
@@ -257,8 +291,11 @@ function submitUpdateUser() {
 }
 
 function formatDateToDDMMYYYY(dateString) {
-    const [year, month, day] = dateString.split('-');
-    return `${day}-${month}-${year}`;
+    const date = new Date(dateString); // Parse the date string into a Date object
+    const day = String(date.getDate()).padStart(2, '0'); // Get the day and pad with leading zero
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Get the month (0-indexed) and pad
+    const year = date.getFullYear(); // Get the full year
+    return `${day}-${month}-${year}`; // Return the formatted date
 }
 
 function loadCurrentTravel() {

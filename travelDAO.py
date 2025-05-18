@@ -130,21 +130,49 @@ def get_all_travel():
 
 def get_travel_by_userid(userid):
     con, cursor = connect()
-    cursor.execute("SELECT * FROM travel WHERE userid = %s", (userid,))
+    sql = """
+    SELECT 
+        t.travelid, 
+        t.userid, 
+        t.institution, 
+        t.city, 
+        t.countryid, 
+        c.common_name AS country_name, 
+        t.travelstart, 
+        t.travelend
+    FROM 
+        travel t
+    JOIN 
+        country c ON t.countryid = c.countryid
+    WHERE 
+        t.userid = %s
+    """
+    cursor.execute(sql, (userid,))
     results = cursor.fetchall()
-    countries = load_countries()
-    country_map = {str(c['countryid']): c['common_name'] for c in countries}
-
-    for travel in results:
-        cid = str(travel['countryid'])
-        travel['country_name'] = country_map.get(cid, 'Unknown')
     cursor.close()
     con.close()
     return results
 
 def get_travel_by_id(travelid):
     con, cursor = connect()
-    cursor.execute("SELECT * FROM travel WHERE travelid = %s", (travelid,))
+    sql = """
+    SELECT 
+        t.travelid, 
+        t.userid, 
+        t.institution, 
+        t.city, 
+        t.countryid, 
+        c.common_name AS country_name, 
+        t.travelstart, 
+        t.travelend
+    FROM 
+        travel t
+    JOIN 
+        country c ON t.countryid = c.countryid
+    WHERE 
+        t.travelid = %s
+    """
+    cursor.execute(sql, (travelid,))
     result = cursor.fetchone()
     cursor.close()
     con.close()
@@ -153,12 +181,12 @@ def get_travel_by_id(travelid):
 def update_travel_record(updated_travel):
     con, cursor = connect()
     sql = """UPDATE travel
-             SET institution = %s, city = %s, country = %s, travelstart = %s, travelend = %s
+             SET institution = %s, city = %s, countryid = %s, travelstart = %s, travelend = %s
              WHERE travelid = %s"""
     values = (
         updated_travel['institution'],
         updated_travel['city'],
-        updated_travel['country'],
+        updated_travel['countryid'],
         updated_travel['travelstart'],
         updated_travel['travelend'],
         updated_travel['travelid']
@@ -195,7 +223,7 @@ def get_current_travel():
 
 def get_country_details(normalised_country_name):
     con, cursor = connect()
-    cursor.execute("SELECT * FROM country WHERE commonname = %s", (normalised_country_name,))
+    cursor.execute("SELECT * FROM country WHERE common_name = %s", (normalised_country_name,))
     result = cursor.fetchone()
     cursor.close()
     con.close()
