@@ -183,7 +183,7 @@ def current_travel_admin(userid):
 @app.route('/country-list', methods=['GET'])
 def country_list():
     countries_data = load_countries()
-    countries_data = sorted(countries_data, key=lambda x: x['name']['common'].lower())
+    countries_data = sorted(countries_data, key=lambda x: x['common_name'].lower())
     return render_template('country-list.html', countries=countries_data)
 
 @app.route('/country-details/<country_name>', methods=['GET'])

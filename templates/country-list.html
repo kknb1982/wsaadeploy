@@ -6,7 +6,7 @@
         <script src="/static/js/main.js" defer></script>
     </head>
 
-    <body onload="loadCountryList()">
+    <body onload="loadCountries()">
         
         <div class="container mt-4">
             <h1>List of all countries data is available for</h1>
@@ -23,10 +23,10 @@
                 <tbody>
                     {% for country in countries %}
                     <tr>
-                        <td>{{ country['name']['common'] }}</td>
-                        <td>{{ country['name']['official'] }}</td>
+                        <td>{{ country['common_name'] }}</td>
+                        <td>{{ country['official_name'] }}</td>
                         <td>
-                            <a href="/country-details/{{ country['name']['common'] | lower | replace(' ', '-') }}" class="btn btn-link">
+                            <a href="/country-details/{{ country['common_name'] | lower | replace(' ', '-') }}" class="btn btn-link">
                                 View Details
                             </a>
                         </td>

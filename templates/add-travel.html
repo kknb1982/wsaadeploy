@@ -32,7 +32,6 @@
 
         <script>
             const currentUserId = "{{ session['userid'] }}";
-            let countries = [];
             fetch('/api/countries-simple')
                 .then(res => res.json())
                 .then(data => {

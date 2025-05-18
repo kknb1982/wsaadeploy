@@ -191,19 +191,37 @@ def update_travel_record(updated_travel):
         updated_travel['travelend'],
         updated_travel['travelid']
     )
-    cursor.execute(sql, values)
-    con.commit()
-    cursor.close()
-    con.close()
-    return True
+    try:
+        cursor.execute(sql, values)
+        con.commit()
+        return True, None
+    except Exception as e:
+        error_message = f"Error updating travel record: {e}"
+        print(error_message)
+    finally:
+        cursor.close()
+        con.close()
 
 def delete_travel_record(travelid):
     con, cursor = connect()
-    cursor.execute("DELETE FROM travel WHERE travelid = %s", (travelid,))
-    con.commit()
-    cursor.close()
-    con.close()
-    return True
+    try:
+        # Fetch the travel record before deleting
+        cursor.execute("SELECT * FROM travel WHERE travelid = %s", (travelid,))
+        travel_record = cursor.fetchone()
+
+        if not travel_record:
+            return None  # Return None if the record does not exist
+
+        # Delete the travel record
+        cursor.execute("DELETE FROM travel WHERE travelid = %s", (travelid,))
+        con.commit()
+        return travel_record  # Return the deleted travel record
+    except Exception as e:
+        print(f"Error deleting travel record: {e}")
+        return None
+    finally:
+        cursor.close()
+        con.close()
 
 def get_current_travel():
     con, cursor = connect()
@@ -232,7 +250,7 @@ def get_country_details(normalised_country_name):
 #--------------------COUNTRY DATA
 def load_countries():
     con, cursor = connect()
-    cursor.execute("SELECT * FROM country")
+    cursor.execute("SELECT DISTINCT common_name, official_name, countryid FROM country")
     countries_data = cursor.fetchall()
     cursor.close()
     con.close()
