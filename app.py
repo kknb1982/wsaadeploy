@@ -27,10 +27,12 @@ def register_user():
         phone = data.get('phone')
 
         try:
+            # Pass the role explicitly
             add_user(firstname, lastname, email, phone, role='student')
             return jsonify({'success': True, 'message': 'User registered successfully!'}), 200
-        except mysql.connector.Error as err:
-            return f"Error: {err}"
+        except Exception as err:
+            return jsonify({'success': False, 'error': str(err)}), 500
+
     return render_template('register.html')
 
 @app.route('/login', methods=['GET', 'POST'])
