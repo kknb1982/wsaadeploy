@@ -147,23 +147,45 @@ def update_travel(travelid):
             print(f"Error updating travel record: {e}")  # Debugging log
             return jsonify({'error': 'An internal server error occurred.'}), 500
 
+@app.route('/login-admin', methods=['GET', 'POST'])
+def admin_login_page():
+    if request.method == 'POST':
+        userid = request.form.get('userid')  # Get the userid from the form
+        user_info = get_user_info(userid)  # Fetch user info from the database or data source
+        if user_info:
+            # Store user details in the session
+            session['userid'] = userid
+            session['firstname'] = user_info['firstname']
+            session['lastname'] = user_info['lastname']
+            session['role'] = user_info['role']
+            session['email'] = user_info['email']
+            session['phone'] = user_info['phone']
+            if session['role'] == 'admin':
+                # Redirect to the dashboard with the userid
+                return redirect(f'/admin-dashboard/{userid}')
+        else:
+            return "Invalid User ID. Please try again.", 401
+    return render_template('login.html')
+
 @app.route('/admin-dashboard/<userid>', methods=['GET'])
 def admin_dashboard(userid):
     if 'userid' not in session:
         print("Session is missing. Redirecting to login.")
         return redirect('/login')
-    
+
     if session['role'] != 'admin':
         print(f"Unauthorized access attempt by user {session['userid']} with role {session['role']}")
         return "Unauthorized access", 403
-    
+
     print(f"Admin dashboard accessed by {session['userid']}")
-    user = {       
+    user = {
         'userid': session['userid'],
         'firstname': session['firstname'],
-        'lastname': session['lastname']}
-    
+        'lastname': session['lastname']
+    }
+
     return render_template('admin-dashboard.html', user=user)
+
 
 @app.route('/current_travel/<userid>', methods=['GET'])
 def current_travel_admin(userid):
