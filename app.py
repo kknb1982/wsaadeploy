@@ -24,7 +24,11 @@ def register_user():
         lastname = request.form.get('lastname')
         email = request.form.get('email')
         phone = request.form.get('phone')
+<<<<<<< HEAD
         role = 'student'
+=======
+        role = 'user'  # or assign based on your logic
+>>>>>>> ff3e6ca4b3aa2a62a34a6ccec3cce64191a0c5ec
 
         try:
             con = connect()
@@ -79,10 +83,15 @@ def dashboard(userid):
 
 @app.route('/update-user/<int:userid>', methods=['GET', 'POST'])
 def update_user(userid):
+<<<<<<< HEAD
     if 'userid' not in session:
         return redirect ('/login')
     if str(session['userid']) != str(userid):
         return "Unauthorised access", 403
+=======
+    if userid not in session:
+        return redirect ('/login')
+>>>>>>> ff3e6ca4b3aa2a62a34a6ccec3cce64191a0c5ec
     if request.method == 'POST':
         updated_user = {
             'userid': userid,
@@ -98,8 +107,12 @@ def update_user(userid):
     else:
         # Handle GET request, e.g., render the update form
         user_info = get_user_info(userid)
+<<<<<<< HEAD
         print(f"User info fetched for ID {userid}: {user_info}")  # Debugging log
         return render_template('update-user.html', user=user_info)
+=======
+        return render_template('update_user.html', user=user_info)
+>>>>>>> ff3e6ca4b3aa2a62a34a6ccec3cce64191a0c5ec
 
 
 @app.route('/add-travel/<userid>')
@@ -117,7 +130,11 @@ def view_travel(userid):
     user = {       
         'userid': session['userid'],
         'firstname': session['firstname'],
+<<<<<<< HEAD
         'lastname': session['lastname']}
+=======
+        'surname': session['surname']}
+>>>>>>> ff3e6ca4b3aa2a62a34a6ccec3cce64191a0c5ec
     user_travel_data = get_travel_by_id(userid)
     return render_template('view-travel.html', user=user,travel=user_travel_data)
     
@@ -269,7 +286,11 @@ def get_travel(userid):
     if session['userid'] != userid:
         return jsonify({'error': 'Unauthorized access'}), 403
 
+<<<<<<< HEAD
     travel_data = get_travel_by_userid(userid)  # Fetch travel data for the user
+=======
+    travel_data = get_travel_by_id(userid)  # Fetch travel data for the user
+>>>>>>> ff3e6ca4b3aa2a62a34a6ccec3cce64191a0c5ec
     if not travel_data:
         return jsonify({'error': 'No travel records found'}), 404
 
