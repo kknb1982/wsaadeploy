@@ -172,7 +172,11 @@ def get_country_details(normalised_country_name):
     return result
 
 #--------------------COUNTRY DATA
-def update_country_data():
+def load_countries():
     con, cursor = connect()
-    sql = "UPDATE table SET"
-    cursor.execute("DROP TABLE country")
+    cursor.execute("SELECT * FROM country")
+    countries_data = cursor.fetchall()
+    cursor.close()
+    con.close()
+    return countries_data
+    

@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify, redirect, session
 from flask_session import Session
 from utils.data_handler import read_travel_data, get_travel_by_id, current_travel, add_travel_record, update_travel_record, delete_travel_record, get_user_info, update_user_record, get_travel_data_for_user
 from utils.newsAPI_client import fetch_news, fetch_headlines
-from utils.countries_API import get_countries, get_country_details, CACHE_FILE
+from travelDAO import load_countries
 from datetime import datetime
 import json
 
@@ -24,7 +24,7 @@ def register_user():
         lastname = request.form.get('lastname')
         email = request.form.get('email')
         phone = request.form.get('phone')
-        role = 'user'  # or assign based on your logic
+        role = 'student'
 
         try:
             con = connect()
@@ -187,7 +187,7 @@ def current_travel_admin(userid):
 
 @app.route('/country-list', methods=['GET'])
 def country_list():
-    countries_data = get_countries()
+    countries_data = load_countries()
     countries_data = sorted(countries_data, key=lambda x: x['name']['common'].lower())
     return render_template('country-list.html', countries=countries_data)
 
@@ -400,7 +400,7 @@ def api_current_travel():
 
 @app.route('/api/countries', methods=['GET'])
 def api_countries():
-    countries_data = get_countries()
+    countries_data = load_countries()
     countries_data = sorted(countries_data, key=lambda x: x['name']['common'].lower())
     return jsonify(countries_data)
 
@@ -429,12 +429,6 @@ def download_names():
 
 
 if __name__ == '__main__':
-    print("Loading countries data...")
-    countries_data = get_countries()
-    if countries_data:
-        print("Countries data loaded successfully.")
-    else:
-        print("Failed to load countries data.")
     app.run(debug=True)
     
 
