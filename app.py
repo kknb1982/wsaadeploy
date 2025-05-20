@@ -153,18 +153,18 @@ def admin_login_page():
         userid = request.form.get('userid')  # Get the userid from the form
         user_info = get_user_info(userid)  # Fetch user info from the database or data source
         if user_info:
+            if user_info.get('role') == 'admin':
             # Store user details in the session
-            session['userid'] = userid
-            session['firstname'] = user_info['firstname']
-            session['lastname'] = user_info['lastname']
-            session['role'] = user_info['role']
-            session['email'] = user_info['email']
-            session['phone'] = user_info['phone']
-            if session['role'] == 'admin':
+                session['userid'] = userid
+                session['firstname'] = user_info['firstname']
+                session['lastname'] = user_info['lastname']
+                session['role'] = user_info['role']
+                session['email'] = user_info['email']
+                session['phone'] = user_info['phone']
                 # Redirect to the dashboard with the userid
                 return redirect(f'/admin-dashboard/{userid}')
         else:
-            return "Invalid User ID. Please try again.", 401
+            return redirect('/')
     return render_template('login.html')
 
 @app.route('/admin-dashboard/<userid>', methods=['GET'])
