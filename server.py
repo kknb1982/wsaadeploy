@@ -1,10 +1,8 @@
 from flask import Flask, render_template, request, jsonify, redirect, session
 from flask_session import Session
-from utils.newsAPI_client import *
-from utils.countries_API import *
-from travelDAO import *
-
-
+from utils.newsAPI_client import fetch_news, fetch_headlines
+from utils.countries_API import get_countries, update_countries_table
+from travelDAO import add_user, get_user_info,update_user_record, add_travel_record, get_travel_by_userid, get_travel_by_id, update_travel_record, delete_travel_record, get_current_travel, get_all_travel, get_country_details, load_countries
 app = Flask(__name__,static_folder='static', template_folder='templates')
 app.secret_key = 'your_secret_key'  # Required for sessions
 app.config['SESSION_TYPE'] = 'filesystem'  # Store sessions on the filesystem
