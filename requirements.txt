@@ -1,4 +1,4 @@
 flask
 flask-session
 requests
-mysql
+mysql.connector
