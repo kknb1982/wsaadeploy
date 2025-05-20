@@ -97,18 +97,26 @@ def update_countries_table(countries_data):
             
             # UPSERT: Try to update first, then insert if not exists
             update_sql = """
-                INSERT INTO country (commonname, officialname, cca2, currency)
+                INSERT INTO country (common_name, official_name, capital, population, cca2, currency ,flag_url, map_url)
                 VALUES (%s, %s, %s, %s)
                 ON DUPLICATE KEY UPDATE
-                    commonname = VALUES(commonname),
-                    officialname = VALUES(officialname),
+                    common_name = VALUES(common_name),
+                    official_name = VALUES(official_name),
+                    capital = VALUES(capital),
+                    population = VALUES(population),
                     currency = VALUES(currency)
+                    flag_url = VALUES(flag_url),
+                    map_url = VALUES(map_url)
             """
             values = (
-                info['commonname'],
-                info['officialname'],
+                info['common_name'],
+                info['official_name'],
+                info['capital'],
+                info['population'],
                 info['cca2'],
-                info['currency']
+                info['currency'],
+                info['flag_url'],
+                info['map_url']
             )
 
             cursor.execute(update_sql, values)
