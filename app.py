@@ -25,10 +25,11 @@ def register_user():
         lastname = data.get('lastname')
         email = data.get('email')
         phone = data.get('phone')
+        role ="student"
 
         try:
             # Pass the role explicitly
-            add_user(firstname, lastname, email, phone, role='student')
+            add_user(firstname, lastname, email, phone, role)
             return jsonify({'success': True, 'message': 'User registered successfully!'}), 200
         except Exception as err:
             return jsonify({'success': False, 'error': str(err)}), 500
@@ -255,7 +256,7 @@ def headlines(country_code):
 
 # Add a new user
 @app.route('/api/add_user', methods=['POST'])
-def add_user():
+def api_add_user():
     data = request.get_json()
     firstname = data['firstname']
     lastname = data['lastname']
@@ -264,7 +265,7 @@ def add_user():
 
     try:
         con = con.connect('your_database.db')
-        cursor = conn.cursor()
+        cursor = con.cursor()
         cursor.execute(
             "INSERT INTO users (firstname, lastname, email, phone, role) VALUES (?, ?, ?, ?, ?)",
             (firstname, lastname, email, phone, 'student')
