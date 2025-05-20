@@ -331,11 +331,11 @@ function displayTravelData(data) {
     data.forEach(travel => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${travel.userid}</td>
+            <td>${travel.firstname} ${travel.lastname}</td>
             <td>${travel.travelid}</td>
             <td>${travel.institution}</td>
             <td>${travel.city}</td>
-            <td>${travel.country}</td>
+            <td><a href="/country-details/${travel.common_name.toLowerCase().replace(/ /g, '-')}">${travel.common_name}</a></td>
             <td>${formatDateToDDMMYYYY(travel.travelstart)}</td>
             <td>${formatDateToDDMMYYYY(travel.travelend)}</td>
 

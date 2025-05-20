@@ -227,11 +227,25 @@ def get_current_travel():
     con, cursor = connect()
     today = datetime.now().date()
     sql = """
-    SELECT * FROM travel 
-    WHERE travelstart <= %s AND travelend >= %s
-
+    SELECT 
+        u.firstname, 
+        u.lastname, 
+        t.travelid, 
+        t.institution, 
+        t.city, 
+        c.common_name, 
+        t.travelstart, 
+        t.travelend
+    FROM 
+        travel t
+    JOIN 
+        country c ON t.countryid = c.countryid
+    JOIN 
+        users u ON t.userid = u.userid
+    WHERE 
+        t.travelstart <= %s AND t.travelend >= %s
     """
-    values = (today, today,)
+    values = (today, today)
     cursor.execute(sql, values)
     results = cursor.fetchall()
     cursor.close()

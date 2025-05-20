@@ -83,5 +83,8 @@
 
         <br>
         <button class="button button2" onclick="window.location.href='/view-travel/{{session['userid']}}'">Back to Travel List</button>
+        <br>
+        <p>Only administrators can access the Admin Dashboard</p>
+        <button class="button button3" onclick="window.location.href='/admin-dashboard/{{session['userid']}}'">Back to Admin Dashboard</button>
     </body>
 </html>

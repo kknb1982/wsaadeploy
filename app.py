@@ -195,7 +195,8 @@ def current_travel_admin(userid):
         return redirect('/login-admin')
     else:
         travels = get_current_travel()
-        return render_template('current-travel.html', travel_data=travels)
+        print(f"Current travel records: {travels}")
+        return render_template('current-travel.html', travel_records=travels)
 
 @app.route('/country-list', methods=['GET'])
 def country_list():
