@@ -3,8 +3,6 @@ from flask_session import Session
 from utils.newsAPI_client import *
 from utils.countries_API import *
 from travelDAO import *
-from datetime import datetime
-import json
 
 
 app = Flask(__name__,static_folder='static', template_folder='templates')
