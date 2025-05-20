@@ -165,7 +165,7 @@ def admin_login_page():
                 return redirect(f'/admin-dashboard/{userid}')
         else:
             return redirect('/')
-    return render_template('login.html')
+    return render_template('login-admin.html')
 
 @app.route('/admin-dashboard/<userid>', methods=['GET'])
 def admin_dashboard(userid):
@@ -187,15 +187,15 @@ def admin_dashboard(userid):
     return render_template('admin-dashboard.html', user=user)
 
 
-@app.route('/current_travel/<userid>', methods=['GET'])
+@app.route('/current-travel/<userid>', methods=['GET'])
 def current_travel_admin(userid):
     if 'userid' not in session:
         return redirect('/login')
     if session['role'] != "admin":
-        return redirect('/login')
+        return redirect('/login-admin')
     else:
         travels = get_current_travel()
-        return render_template('current_travel.html', travel_data=travels)
+        return render_template('current-travel.html', travel_data=travels)
 
 @app.route('/country-list', methods=['GET'])
 def country_list():
@@ -398,7 +398,7 @@ def api_current_travel():
     if session['role'] != 'admin':
         return jsonify({'error': 'Unauthorized access'}), 403
 
-    current_travel_data = current_travel()  # Use the `current_travel` function from `data_handler.py`
+    current_travel_data = get_current_travel() 
     
     for record in current_travel_data:
         if 'travelid' not in record:

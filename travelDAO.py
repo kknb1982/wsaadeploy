@@ -226,13 +226,12 @@ def delete_travel_record(travelid):
 def get_current_travel():
     con, cursor = connect()
     today = datetime.now().date()
-    three_days_ago = today - timedelta(days=3)
     sql = """
     SELECT * FROM travel 
-    WHERE (travelstart <= %s AND travelend >= %s)
-    OR (travelend BETWEEN %s AND %s)
+    WHERE travelstart <= %s AND travelend >= %s
+
     """
-    values = (today, today, three_days_ago, today)
+    values = (today, today,)
     cursor.execute(sql, values)
     results = cursor.fetchall()
     cursor.close()

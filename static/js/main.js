@@ -298,6 +298,7 @@ function formatDateToDDMMYYYY(dateString) {
 }
 
 function loadCurrentTravel() {
+    const userid = "{{session['userid']}}"; // Get the user ID from the session
     fetch('/api/current-travel') // Fetch current travel data from the backend
         .then(response => {
             if (!response.ok) {
