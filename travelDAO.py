@@ -3,10 +3,10 @@ from mysql.connector import Error
 from datetime import datetime, timedelta
 
 DB_CONFIG = {
-    'host': 'localhost',
+    'host': 'kirstinb2025.mysql.pythonanywhere-services.com',
     'database': 'ggtravel',
-    'user': 'root',
-    'password': ''
+    'user': 'kirstinb2025',
+    'password': 'rootwsaa'
 }
 
 def connect():
