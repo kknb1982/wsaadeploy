@@ -2,7 +2,6 @@ import os
 import json
 import requests
 from datetime import datetime, timedelta
-from utils.data_handler import current_travel
 
 CONFIG_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'config.json')
 with open(CONFIG_FILE_PATH, 'r') as config_file:
