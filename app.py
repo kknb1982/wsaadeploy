@@ -212,6 +212,7 @@ def country_details(country_name):
         return "Country details not found.", 404
 
     print(f"Country details: {country}")  # Debugging log
+    country['population'] =f"{country['population']:,}"  # Format population with commas
 
     return render_template('country-details.html', country=country)
 

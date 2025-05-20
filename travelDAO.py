@@ -32,8 +32,8 @@ def connect():
     capital VARCHAR(100),
     population BIGINT,
     cca2 CHAR(2) UNIQUE,
-    currency JSON,
-    languages JSON,
+    currency VARCHAR(255),
+    languages VARCHAR(255),
     flag_url VARCHAR(255),
     map_url VARCHAR(255)
 );

@@ -49,8 +49,10 @@ def get_countries():
 
                 population = country.get('population')
                 cca2 = country.get('cca2')
-                currency = json.dumps(country.get('currencies'))
-                languages = json.dumps(country.get('languages'))
+                currency_dict = country.get('currencies', {})
+                currency = ', '.join([currency_info.get('name', '') for currency_info in currency_dict.values()]) if currency_dict else None
+                languages_dict = country.get('languages', {})
+                languages = ', '.join(languages_dict.values()) if languages_dict else None
                 flag_url = country.get('flags', {}).get('png')
                 map_url = country.get('maps', {}).get('googleMaps')
 
