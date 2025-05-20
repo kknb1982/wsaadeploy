@@ -90,14 +90,14 @@ def update_user_record(updated_user):
     con.close()
     return True
 
-def update_user_role(userid, role):
+"""def update_user_role(userid, role):
     con, cursor = connect()
     sql = "UPDATE users SET role = %s WHERE userid = %s"
     cursor.execute(sql, (role, userid))
     con.commit()
     cursor.close()
     con.close()
-    return True
+    return True"""
 
 
 # ---------------- TRAVEL HANDLING ---------------- #
@@ -120,13 +120,13 @@ def add_travel_record(travel_info):
     con.close()
     return True
 
-def get_all_travel():
+"""def get_all_travel():
     con, cursor = connect()
     cursor.execute("SELECT * FROM travel")
     results = cursor.fetchall()
     cursor.close()
     con.close()
-    return results
+    return results"""
 
 def get_travel_by_userid(userid):
     con, cursor = connect()
@@ -247,6 +247,31 @@ def get_current_travel():
     """
     values = (today, today)
     cursor.execute(sql, values)
+    results = cursor.fetchall()
+    cursor.close()
+    con.close()
+    return results
+
+def get_all_travel():
+    con, cursor = connect()
+    sql = """
+    SELECT 
+        u.firstname, 
+        u.lastname, 
+        t.travelid, 
+        t.institution, 
+        t.city, 
+        c.common_name, 
+        t.travelstart, 
+        t.travelend
+    FROM 
+        travel t
+    JOIN 
+        country c ON t.countryid = c.countryid
+    JOIN 
+        users u ON t.userid = u.userid
+    """
+    cursor.execute(sql)
     results = cursor.fetchall()
     cursor.close()
     con.close()

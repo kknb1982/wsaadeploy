@@ -197,6 +197,17 @@ def current_travel_admin(userid):
         travels = get_current_travel()
         print(f"Current travel records: {travels}")
         return render_template('current-travel.html', travel_records=travels)
+    
+@app.route('/all-travel/<userid>', methods=['GET'])
+def all_travel_admin(userid):
+    if 'userid' not in session:
+        return redirect('/login')
+    if session['role'] != "admin":
+        return redirect('/login-admin')
+    else:
+        travels = get_all_travel()
+        print(f"All travel records: {travels}")
+        return render_template('all-travel.html', travel_records=travels)
 
 @app.route('/country-list', methods=['GET'])
 def country_list():
@@ -258,12 +269,12 @@ def add_user():
             "INSERT INTO users (firstname, lastname, email, phone, role) VALUES (?, ?, ?, ?, ?)",
             (firstname, lastname, email, phone, 'student')
         )
-        conn.commit()
+        con.commit()
         return jsonify({"message": "User added successfully"}), 200
     except Exception as e:
         return jsonify({"message": str(e)}), 500
     finally:
-        conn.close()
+        con.close()
 
 # API to get all travel records
 @app.route('/api/travel/<userid>', methods=['GET'])
@@ -367,31 +378,6 @@ def admin_login(userid):
 
     return jsonify({'message': 'Admin login successful'}), 200
 
-@app.route('/api/update-travel/<travelid>', methods=['POST'])
-def api_update_travel():
-    if 'userid' not in session:
-        return jsonify({'error': 'Unauthorized'}), 401
-
-    travel_data = request.get_json()
-    update_travel_record(travel_data)  # Update the travel record in the CSV
-    return jsonify({'message': 'Travel record updated successfully.'}), 200
-
-@app.route('/api/travel/<travelid>', methods=['GET'])
-def api_get_travel_by_id(travelid):
-    try:
-        # Read all travel data
-        all_travel_data = read_travel_data()
-
-        # Find the travel record with the matching ID
-        travel = next((t for t in all_travel_data if t['travelid'] == travelid), None)
-        if travel:
-            return jsonify(travel), 200
-        else:
-            return jsonify({'error': 'Travel record not found'}), 404
-    except Exception as e:
-        print(f"Error fetching travel record: {e}")
-        return jsonify({'error': 'An error occurred while fetching the travel record'}), 500
-
 @app.route('/api/current-travel', methods=['GET'])
 def api_current_travel():
     if 'userid' not in session:
@@ -407,11 +393,20 @@ def api_current_travel():
 
     return jsonify(current_travel_data)
 
-@app.route('/api/countries', methods=['GET'])
-def api_countries():
-    countries_data = load_countries()
-    countries_data = sorted(countries_data, key=lambda x: x['name']['common'].lower())
-    return jsonify(countries_data)
+@app.route('/api/all-travel', methods=['GET'])
+def api_all_travel():
+    if 'userid' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    if session['role'] != 'admin':
+        return jsonify({'error': 'Unauthorized access'}), 403
+
+    all_travel_data = get_all_travel() 
+    
+    for record in all_travel_data:
+        if 'travelid' not in record:
+            print(f"Missing travelid in record: {record}")  # Debugging log
+
+    return jsonify(all_travel_data)
 
 @app.route('/api/countries-simple', methods=['GET'])
 def api_countries_simple():
@@ -432,17 +427,6 @@ def api_news():
     if not news:
         return jsonify({'error': 'No news found'}), 404
     return jsonify(news)
-
-@app.route('/api/download-names', methods=['GET'])
-def download_names():
-    if 'userid' not in session:
-        return jsonify({'error': 'Unauthorized'}), 401
-    if session['role'] != 'admin':
-        return jsonify({'error': 'Unauthorized access'}), 403
-    
-
-    # Fetch the travel data for the logged-in user
-
 
 if __name__ == '__main__':
     get_countries()

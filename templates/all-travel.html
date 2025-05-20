@@ -1,0 +1,71 @@
+<html>
+    <head>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+        <link href="/static/css/style.css" rel="stylesheet">
+        <title>All travel</title>
+        <script src="/static/js/main.js" defer></script>
+    </head>
+
+    <body onload="loadAllTravel()">
+
+        {% if session['userid'] %}
+            <div style="background-color: lightgray; padding: 10px;">
+                Logged in as: <strong>{{ session['userid'] }}</strong>
+                <button class="button button5" href="window.location.href='/logout'">Logout</button>
+            </div>
+        {% endif %}
+
+        <h1>All travel</h1><br>
+
+        <!-- Filters Section -->
+        <h2>Filter for travel records</h2>
+        <div class="filters">
+            <label for="filterCity">City:</label>
+            <input type="text" id="filterCity" placeholder="Enter city" oninput="filterTravel()">
+
+            <label for="filterCountry">Country:</label>
+            <input type="text" id="filterCountry" placeholder="Enter country" oninput="filterTravel()">
+
+            <label for="filterStartDate">Start Date:</label>
+            <input type="date" id="filterStartDate" onchange="filterTravel()">
+
+            <label for="filterEndDate">End Date:</label>
+            <input type="date" id="filterEndDate" onchange="filterTravel()">
+
+        <br><br>
+        <h3>Current travel that meets the criteria</h3>
+        <div id="travelList">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Traveller</th>
+                        <th>Travel ID</th>
+                        <th>Institution</th>
+                        <th>City</th>
+                        <th>Country</th>
+                        <th>Travel Start</th>
+                        <th>Travel End</th>
+                    </tr>
+                </thead>
+                <tbody id="travelTableBody">
+                    {% for travel in travel_records %}
+                    <tr data-travel-id="{{ travel.travelid }}">
+                        <td>{{ travel.firstname }} {{ travel.lastname }}</td>
+                        <td>{{ travel.travelid }}</td>
+                        <td>{{ travel.institution }}</td>
+                        <td>{{ travel.city }}</td>
+                        <td><a href="/country-details/{{ travel.common_name | lower | replace(' ', '-') }}">{{ travel.common_name }}</a></td>
+                        <td>{{ travel.travelstart }}</td>
+                        <td>{{ travel.travelend }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>        
+        </div>
+
+        <br>
+        <button class="button button2" onclick="window.location.href='/admin-dashboard/{{session['userid']}}'">Back to Admin Dashboard</button>
+        <button class="button button3" onclick="window.location.href='/news-search'">Search news</button>
+
+    </body>
+</html>

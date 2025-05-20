@@ -2,7 +2,6 @@ import requests
 import mysql.connector
 from mysql.connector import Error
 from datetime import datetime
-import json
 
 # Database configuration
 DB_CONFIG = {
@@ -84,28 +83,6 @@ def get_countries():
             cursor.close()
             conn.close()
             print("MySQL connection is closed.")
-            
-
-
-def extract_country_info(country):
-    """Extract relevant data for DB from API response."""
-    try:
-        common_name = country['name']['common']
-        official_name = country['name']['official']
-        cca2 = country['cca2']
-        
-        currencies = country.get('currencies', {})
-        currency = ','.join(currencies.keys()) if currencies else None
-
-        return {
-            'commonname': common_name,
-            'officialname': official_name,
-            'cca2': cca2,
-            'currency': currency
-        }
-    except KeyError as e:
-        print(f"Missing field in data: {e}")
-        return None
 
 def update_countries_table(countries_data):
     """Insert or update country records in the database."""

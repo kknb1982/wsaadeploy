@@ -1,4 +1,5 @@
 let countries = [];
+let travelData = []; // Global variable to store travel data
 
 // Add new user (new users are automatically added a students)
 function addUser(event) {
@@ -318,6 +319,28 @@ function loadCurrentTravel() {
         });
 }
 
+
+function loadAllTravel() {
+    const userid = "{{session['userid']}}"; // Get the user ID from the session
+    fetch('/api/all-travel') // Fetch current travel data from the backend
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('All travel data:', data); // Log the data for debugging
+            travelData = data; // Store the data globally
+            displayTravelData(travelData); // Display the data in the table
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            const travelList = document.getElementById('travelList');
+            travelList.innerHTML = '<p>An error occurred while loading travel records. Please try again later.</p>';
+        });
+}
+
 // Display travel data in the table
 function displayTravelData(data) {
     const travelTableBody = document.getElementById('travelTableBody');
@@ -344,22 +367,6 @@ function displayTravelData(data) {
     });
 }
 
-function filterCountries() {
-    const input = document.getElementById('searchBox').value.toLowerCase();
-    const rows = document.querySelectorAll('#countryTable tbody tr'); // Only target rows in <tbody>
-
-    rows.forEach(row => {
-        const countryNameCell = row.querySelector('td'); // Get the first <td> in the row
-        if (countryNameCell) { // Ensure the <td> exists
-            const countryName = countryNameCell.textContent.toLowerCase();
-            if (countryName.includes(input)) {
-                row.style.display = ''; // Show the row if it matches the filter
-            } else {
-                row.style.display = 'none'; // Hide the row if it doesn't match
-            }
-        }
-    });
-}
 function setDefaultDates() {
     const today = new Date();
     const threeDaysAgo = new Date(today);
@@ -368,8 +375,7 @@ function setDefaultDates() {
     const formattedThreeDaysAgo = threeDaysAgo.toISOString().split('T')[0];
 
     fromDateInput = formattedToday;
-    toDateInput = formattedThreeDaysAgo; 
-}
+    toDateInput = formattedThreeDaysAgo; }//
     
 // Fetch incident news for current travel records
 function searchNews() {
@@ -436,7 +442,7 @@ function filterTravel() {
 
     const filteredData = travelData.filter(travel => {
         const matchesCity = travel.city.toLowerCase().includes(cityFilter);
-        const matchesCountry = travel.country.toLowerCase().includes(countryFilter);
+        const matchesCountry = travel.common_name.toLowerCase().includes(countryFilter);
         const matchesStartDate = !startDateFilter || new Date(travel.travelstart) >= new Date(startDateFilter);
         const matchesEndDate = !endDateFilter || new Date(travel.travelend) <= new Date(endDateFilter);
 
@@ -445,39 +451,6 @@ function filterTravel() {
 
     displayTravelData(filteredData); // Update the table with filtered data
 }
-
-function loadCountryList() {
-    fetch('/api/countries') // Fetch data from the new API endpoint
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json(); // Parse the JSON response
-        })
-        .then(data => {
-            const countryTableBody = document.querySelector('#countryTable tbody');
-            countryTableBody.innerHTML = ''; // Clear existing content
-
-            data.forEach(country => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${country.name.common}</td>
-                    <td>${country.name.official}</td>
-                    <td>
-                        <a href="/country-details/${country.name.common.toLowerCase().replace(/ /g, '-')}" class="btn btn-link">
-                            View Details
-                        </a>
-                    </td>
-                `;
-                countryTableBody.appendChild(row);
-            });
-        })
-        .catch(error => {
-            console.error('Error loading country list:', error);
-            const countryTableBody = document.querySelector('#countryTable tbody');
-            countryTableBody.innerHTML = '<tr><td colspan="2">An error occurred while loading the country list. Please try again later.</td></tr>';
-        });
-};
 
 function loginAsAdmin() {
     const userid = document.getElementById('userid').value;
@@ -522,25 +495,3 @@ function loginAsAdmin() {
         });
 }
 
-function downloadNames() {
-    fetch('/api/download-names')    
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-            }
-        return response.blob(); // Get the response as a blob
-        })
-    .then(blob => {
-        const url = window.URL.createObjectURL(blob); // Create a URL for the blob
-        const a = document.createElement('a'); // Create an anchor element
-        a.href = url; // Set the href to the blob URL
-        a.download = 'names.csv'; // Set the download attribute with a filename
-        document.body.appendChild(a); // Append the anchor to the body
-        a.click(); // Programmatically click the anchor to trigger the download
-        a.remove(); // Remove the anchor from the document
-        })
-    .catch(error => {
-        console.error('Error downloading names:', error);
-        alert('An error occurred while downloading names. Please try again.');
-    });
-}
