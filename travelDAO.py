@@ -3,9 +3,9 @@ from mysql.connector import Error
 from datetime import datetime, timedelta
 
 DB_CONFIG = {
-    'host': 'kirstinb2025.mysql.pythonanywhere-services.com',
+    'host': 'kknb2025.mysql.pythonanywhere-services.com',
     'database': 'ggtravel',
-    'user': 'kirstinb2025',
+    'user': 'kknb2025',
     'password': 'rootwsaa'
 }
 
@@ -34,7 +34,7 @@ def connect():
     cca2 CHAR(2) UNIQUE,
     currency VARCHAR(255),
     languages VARCHAR(255),
-    flag_url VARCHAR(255),
+    flag_url VARCHAR(255),INSER
     map_url VARCHAR(255)
 );
 
