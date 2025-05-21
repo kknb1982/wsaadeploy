@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 DB_CONFIG = {
     'host': 'kknb2025.mysql.pythonanywhere-services.com',
-    'database': 'ggtravel',
+    'database': 'kknb2025$ggtravel',
     'user': 'kknb2025',
     'password': 'rootwsaa$ggtravel'
 }
