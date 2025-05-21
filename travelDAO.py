@@ -6,7 +6,7 @@ DB_CONFIG = {
     'host': 'kknb2025.mysql.pythonanywhere-services.com',
     'database': 'ggtravel',
     'user': 'kknb2025',
-    'password': 'rootwsaa'
+    'password': 'rootwsaa$ggtravel'
 }
 
 def connect():
